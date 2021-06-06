@@ -1,0 +1,5 @@
+# Tentacles compilation requirements
+setuptools
+
+# Exchange connection requirements
+ccxt

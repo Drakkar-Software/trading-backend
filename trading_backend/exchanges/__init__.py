@@ -13,14 +13,17 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-VERSION = "1.0.0"
-PROJECT_NAME = "trading-backend"
+from trading_backend.exchanges import exchange
+from trading_backend.exchanges.exchange import (
+    Exchange
+)
 
-from trading_backend import exchange_factory
-from trading_backend.exchange_factory import (
-    create_exchange_backend
+from trading_backend.exchanges import binance
+from trading_backend.exchanges.binance import (
+    Binance
 )
 
 __all__ = [
-    "create_exchange_backend",
+    "Exchange",
+    "Binance",
 ]

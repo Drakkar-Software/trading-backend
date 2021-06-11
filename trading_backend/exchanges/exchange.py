@@ -13,14 +13,21 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-VERSION = "1.0.0"
-PROJECT_NAME = "trading-backend"
 
-from trading_backend import exchange_factory
-from trading_backend.exchange_factory import (
-    create_exchange_backend
-)
 
-__all__ = [
-    "create_exchange_backend",
-]
+class Exchange:
+    def __init__(self, ccxt_exchange):
+        self._ccxt_exchange = ccxt_exchange
+
+    @classmethod
+    def get_name(cls):
+        return 'default'
+
+    def get_authenticated_parameters(self, params) -> dict:
+        return {}
+
+    def get_orders_parameters(self, params) -> dict:
+        return {}
+
+    async def is_valid_account(self) -> (bool, str):
+        return True, None

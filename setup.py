@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Tentacles-Manager-Launcher
+#  Drakkar-Software trading-backend
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or
@@ -17,7 +17,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-from octobot_tentacles_manager import PROJECT_NAME, VERSION
+from trading_backend import PROJECT_NAME, VERSION
 
 PACKAGES = find_packages(exclude=["tests"])
 

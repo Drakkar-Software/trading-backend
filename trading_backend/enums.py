@@ -1,4 +1,4 @@
-#  Drakkar-Software OctoBot-Tentacles-Manager
+#  Drakkar-Software trading-backend
 #  Copyright (c) Drakkar-Software, All rights reserved.
 #
 #  This library is free software; you can redistribute it and/or

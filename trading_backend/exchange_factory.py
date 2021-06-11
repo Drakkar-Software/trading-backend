@@ -13,14 +13,22 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-VERSION = "1.0.0"
-PROJECT_NAME = "trading-backend"
+import trading_backend.exchanges as exchanges
 
-from trading_backend import exchange_factory
-from trading_backend.exchange_factory import (
-    create_exchange_backend
-)
 
-__all__ = [
-    "create_exchange_backend",
-]
+def create_exchange_backend(ccxt_exchange) -> exchanges.Exchange:
+    return _get_exchanges().get(ccxt_exchange.name.lower(), exchanges.Exchange)(ccxt_exchange)
+
+
+def _get_exchanges() -> dict:
+    return {
+        exchange.get_name(): exchange
+        for exchange in _get_subclasses(exchanges.Exchange)
+    }
+
+
+def _get_subclasses(parent) -> list:
+    children = [parent]
+    for child in parent.__subclasses__():
+        children += _get_subclasses(child)
+    return children

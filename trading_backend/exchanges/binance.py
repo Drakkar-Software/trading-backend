@@ -38,7 +38,7 @@ class Binance(exchanges.Exchange):
         return params
 
     async def is_valid_account(self) -> (bool, str):
-        details = await self._ccxt_exchange.private_get_apiReferral_ifNewUser()
+        details = await self._ccxt_exchange.sapi_get_apireferral_ifnewuser()
         if not details.get("rebateWorking", False):
             return False, "This account has a referral code, which is incompatible"
         if not details.get("ifNewUser", False):

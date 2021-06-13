@@ -13,21 +13,23 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import pytest
+import ccxt.async_support
 
 
-class Exchange:
-    def __init__(self, ccxt_exchange):
-        self._ccxt_exchange = ccxt_exchange
+@pytest.fixture
+def binance_exchange():
+    return ccxt.async_support.binance()
 
-    @classmethod
-    def get_name(cls):
-        return 'default'
 
-    def get_authenticated_parameters(self, params) -> dict:
-        return params
+@pytest.fixture
+def bybit_exchange():
+    return ccxt.async_support.bybit()
 
-    def get_orders_parameters(self, params) -> dict:
-        return params
 
-    async def is_valid_account(self) -> (bool, str):
-        return True, None
+@pytest.fixture
+def default_exchange():
+    """
+    :return: An exchange for which there is no exchange implementation in trading_backend.exchanges
+    """
+    return ccxt.async_support.okex()

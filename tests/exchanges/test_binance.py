@@ -42,6 +42,7 @@ def test_get_orders_parameters(binance_exchange):
 @pytest.mark.asyncio
 async def test_is_valid_account(binance_exchange):
     exchange = exchanges.Binance(binance_exchange)
+    params = {"apiAgentCode": exchange.b_id}
     with pytest.raises(ccxt.AuthenticationError):
         await exchange.is_valid_account()
     with mock.patch.object(exchange._ccxt_exchange, "sapi_get_apireferral_ifnewuser",
@@ -49,13 +50,13 @@ async def test_is_valid_account(binance_exchange):
         results = await exchange.is_valid_account()
         assert results[0] is False
         assert isinstance(results[1], str)
-        sapi_get_apireferral_ifnewuser_mock.assert_called_once()
+        sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)
     with mock.patch.object(exchange._ccxt_exchange, "sapi_get_apireferral_ifnewuser",
                            mock.AsyncMock(return_value={"ifNewUser": False})) as sapi_get_apireferral_ifnewuser_mock:
         results = await exchange.is_valid_account()
         assert results[0] is False
         assert isinstance(results[1], str)
-        sapi_get_apireferral_ifnewuser_mock.assert_called_once()
+        sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)
     with mock.patch.object(exchange._ccxt_exchange, "sapi_get_apireferral_ifnewuser",
                            mock.AsyncMock(return_value={})) as sapi_get_apireferral_ifnewuser_mock:
         results = await exchange.is_valid_account()
@@ -67,8 +68,16 @@ async def test_is_valid_account(binance_exchange):
         results = await exchange.is_valid_account()
         assert results[0] is False
         assert isinstance(results[1], str)
-        sapi_get_apireferral_ifnewuser_mock.assert_called_once()
+        sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)
+    with mock.patch.object(exchange._ccxt_exchange, "sapi_get_apireferral_ifnewuser",
+                           mock.AsyncMock(return_value=None)) \
+            as sapi_get_apireferral_ifnewuser_mock:
+        results = await exchange.is_valid_account()
+        assert results[0] is False
+        assert isinstance(results[1], str)
+        sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)
     with mock.patch.object(exchange._ccxt_exchange, "sapi_get_apireferral_ifnewuser",
                            mock.AsyncMock(return_value={"rebateWorking": True, "ifNewUser": True})) \
             as sapi_get_apireferral_ifnewuser_mock:
-        results = (await exchange.is_valid_account()) == (True, None)
+        assert (await exchange.is_valid_account()) == (True, None)
+        sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)

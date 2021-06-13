@@ -13,21 +13,23 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import pytest
+import trading_backend.exchanges as exchanges
+from tests import default_exchange
 
 
-class Exchange:
-    def __init__(self, ccxt_exchange):
-        self._ccxt_exchange = ccxt_exchange
+def test_get_name(default_exchange):
+    assert exchanges.Exchange(default_exchange).get_name() == exchanges.Exchange.get_name()
 
-    @classmethod
-    def get_name(cls):
-        return 'default'
 
-    def get_authenticated_parameters(self, params) -> dict:
-        return params
+def test_get_authenticated_parameters(default_exchange):
+    assert exchanges.Exchange(default_exchange).get_authenticated_parameters({"a": 1}) == {"a": 1}
 
-    def get_orders_parameters(self, params) -> dict:
-        return params
 
-    async def is_valid_account(self) -> (bool, str):
-        return True, None
+def test_get_orders_parameters(default_exchange):
+    assert exchanges.Exchange(default_exchange).get_orders_parameters({"a": 1}) == {"a": 1}
+
+
+@pytest.mark.asyncio
+async def test_is_valid_account(default_exchange):
+    assert await exchanges.Exchange(default_exchange).is_valid_account() == (True, None)

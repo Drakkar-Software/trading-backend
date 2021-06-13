@@ -20,6 +20,7 @@ class Binance(exchanges.Exchange):
     def __init__(self, ccxt_exchange):
         super().__init__(ccxt_exchange)
         self._order_custom_id = "x-bot"
+        self.b_id = "xyz"
 
     @classmethod
     def get_name(cls):
@@ -38,9 +39,12 @@ class Binance(exchanges.Exchange):
         return params
 
     async def is_valid_account(self) -> (bool, str):
-        details = await self._ccxt_exchange.sapi_get_apireferral_ifnewuser()
-        if not details.get("rebateWorking", False):
-            return False, "This account has a referral code, which is incompatible"
-        if not details.get("ifNewUser", False):
-            return False, "This account is not new, which is incompatible"
+        details = await self._ccxt_exchange.sapi_get_apireferral_ifnewuser(params={"apiAgentCode": self.b_id})
+        try:
+            if not details.get("rebateWorking", False):
+                return False, "This account has a referral code, which is incompatible"
+            if not details.get("ifNewUser", False):
+                return False, "This account is not new, which is incompatible"
+        except AttributeError:
+            return False, "Invalid request parameters"
         return True, None

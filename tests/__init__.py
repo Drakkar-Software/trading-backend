@@ -19,12 +19,12 @@ import ccxt.async_support
 
 @pytest.fixture
 def binance_exchange():
-    return ccxt.async_support.binance()
+    return ExchangeWrapper(ccxt.async_support.binance())
 
 
 @pytest.fixture
 def bybit_exchange():
-    return ccxt.async_support.bybit()
+    return ExchangeWrapper(ccxt.async_support.bybit())
 
 
 @pytest.fixture
@@ -32,4 +32,17 @@ def default_exchange():
     """
     :return: An exchange for which there is no exchange implementation in trading_backend.exchanges
     """
-    return ccxt.async_support.okex()
+    return ExchangeWrapper(ccxt.async_support.okex())
+
+
+class ExchangeConnector:
+    def __init__(self, ccxt_exchange):
+        self.client = ccxt_exchange
+
+
+class ExchangeWrapper:
+    def __init__(self, ccxt_exchange):
+        self.connector = ExchangeConnector(ccxt_exchange)
+
+    def _get_params(self, params):
+        return params

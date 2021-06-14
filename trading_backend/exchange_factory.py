@@ -16,8 +16,8 @@
 import trading_backend.exchanges as exchanges
 
 
-def create_exchange_backend(ccxt_exchange) -> exchanges.Exchange:
-    return _get_exchanges().get(ccxt_exchange.name.lower(), exchanges.Exchange)(ccxt_exchange)
+def create_exchange_backend(exchange) -> exchanges.Exchange:
+    return _get_exchanges().get(exchange.connector.client.name.lower(), exchanges.Exchange)(exchange)
 
 
 def _get_exchanges() -> dict:

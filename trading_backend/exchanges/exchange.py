@@ -16,17 +16,16 @@
 
 
 class Exchange:
-    def __init__(self, ccxt_exchange):
-        self._ccxt_exchange = ccxt_exchange
+    def __init__(self, exchange):
+        self._exchange = exchange
 
     @classmethod
     def get_name(cls):
         return 'default'
 
-    def get_authenticated_parameters(self, params) -> dict:
-        return params
-
-    def get_orders_parameters(self, params) -> dict:
+    def get_orders_parameters(self, params=None) -> dict:
+        if params is None:
+            params = {}
         return params
 
     async def is_valid_account(self) -> (bool, str):

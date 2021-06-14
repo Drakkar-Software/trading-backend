@@ -22,10 +22,6 @@ def test_get_name(default_exchange):
     assert exchanges.Exchange(default_exchange).get_name() == exchanges.Exchange.get_name()
 
 
-def test_get_authenticated_parameters(default_exchange):
-    assert exchanges.Exchange(default_exchange).get_authenticated_parameters({"a": 1}) == {"a": 1}
-
-
 def test_get_orders_parameters(default_exchange):
     assert exchanges.Exchange(default_exchange).get_orders_parameters({"a": 1}) == {"a": 1}
 

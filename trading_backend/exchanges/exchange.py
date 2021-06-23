@@ -16,6 +16,10 @@
 
 
 class Exchange:
+    SPOT_ID = None
+    MARGIN_ID = None
+    FUTURE_ID = None
+
     def __init__(self, exchange):
         self._exchange = exchange
 
@@ -30,3 +34,10 @@ class Exchange:
 
     async def is_valid_account(self) -> (bool, str):
         return True, None
+
+    def _get_id(self):
+        if self._exchange.exchange_manager.is_future:
+            return self.FUTURE_ID
+        if self._exchange.exchange_manager.is_margin:
+            return self.MARGIN_ID
+        return self.SPOT_ID

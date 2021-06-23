@@ -28,14 +28,14 @@ def test_get_orders_parameters(binance_exchange):
     exchange = exchanges.Binance(binance_exchange)
     assert exchange.get_orders_parameters({"a": 1}) == {
         "a": 1,
-        'newClientOrderId': exchange._order_custom_id
+        'newClientOrderId': exchange._get_order_custom_id()
     }
 
 
 @pytest.mark.asyncio
 async def test_is_valid_account(binance_exchange):
     exchange = exchanges.Binance(binance_exchange)
-    params = {"apiAgentCode": exchange._b_id}
+    params = {"apiAgentCode": exchange._get_id()}
     with pytest.raises(ccxt.AuthenticationError):
         await exchange.is_valid_account()
     with mock.patch.object(exchange._exchange.connector.client, "sapi_get_apireferral_ifnewuser",

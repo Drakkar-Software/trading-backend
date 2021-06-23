@@ -24,19 +24,23 @@ def test_create_exchange_backend(binance_exchange, bybit_exchange, default_excha
     class ExchangeMock:
         def __init__(self, *args):
             pass
+
     class BinanceMock(ExchangeMock):
         pass
+
     class BybitMock(ExchangeMock):
         pass
+
     class OtherMock(ExchangeMock):
         pass
+
     exchanges_dict = {
         "binance": BinanceMock,
         "bybit": BybitMock,
         "other": OtherMock,
     }
-    with mock.patch.object(trading_backend.exchange_factory, "_get_exchanges", mock.Mock(return_value=exchanges_dict)) \
-        as _get_exchanges_mock:
+    with mock.patch.object(trading_backend.exchange_factory, "_get_exchanges",
+                              mock.Mock(return_value=exchanges_dict)) as _get_exchanges_mock:
         assert isinstance(trading_backend.create_exchange_backend(binance_exchange), BinanceMock)
         _get_exchanges_mock.assert_called_once()
         _get_exchanges_mock.reset_mock()

@@ -17,24 +17,26 @@ import trading_backend.exchanges as exchanges
 
 
 class Binance(exchanges.Exchange):
-    def __init__(self, exchange):
-        super().__init__(exchange)
-        self._b_id = "xyz"
-        self._order_custom_id = f"x-{self._b_id}"
+    SPOT_ID = "T9698EB7"
+    MARGIN_ID = None
+    FUTURE_ID = "uquVg2pc"
 
     @classmethod
     def get_name(cls):
         return 'binance'
 
+    def _get_order_custom_id(self):
+        return f"x-{self._get_id()}"
+
     def get_orders_parameters(self, params=None) -> dict:
         params = super().get_orders_parameters(params)
-        params.update({'newClientOrderId': self._order_custom_id})
+        params.update({'newClientOrderId': self._get_order_custom_id()})
         return params
 
     async def is_valid_account(self) -> (bool, str):
         details = await self._exchange.connector.client.sapi_get_apireferral_ifnewuser(
             params=self._exchange._get_params({
-                "apiAgentCode": self._b_id
+                "apiAgentCode": self._get_id()
             })
         )
         try:

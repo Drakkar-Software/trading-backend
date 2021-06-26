@@ -13,14 +13,19 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 PROJECT_NAME = "trading-backend"
 
 from trading_backend import exchange_factory
 from trading_backend.exchange_factory import (
     create_exchange_backend
 )
+from trading_backend import errors
+from trading_backend.errors import (
+    TimeSyncError
+)
 
 __all__ = [
     "create_exchange_backend",
+    "TimeSyncError",
 ]

@@ -17,5 +17,3 @@ wheel
 pur
 
 pylint
-
-ccxt

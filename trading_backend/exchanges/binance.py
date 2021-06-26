@@ -13,7 +13,10 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import ccxt
+
 import trading_backend.exchanges as exchanges
+import trading_backend.errors
 
 
 class Binance(exchanges.Exchange):
@@ -34,16 +37,18 @@ class Binance(exchanges.Exchange):
         return params
 
     async def is_valid_account(self) -> (bool, str):
-        details = await self._exchange.connector.client.sapi_get_apireferral_ifnewuser(
-            params=self._exchange._get_params({
-                "apiAgentCode": self._get_id()
-            })
-        )
         try:
+            details = await self._exchange.connector.client.sapi_get_apireferral_ifnewuser(
+                params=self._exchange._get_params({
+                    "apiAgentCode": self._get_id()
+                })
+            )
             if not details.get("rebateWorking", False):
                 return False, "This account has a referral code, which is incompatible"
             if not details.get("ifNewUser", False):
                 return False, "This account is not new, which is incompatible"
+        except ccxt.InvalidNonce as err:
+            raise trading_backend.errors.TimeSyncError(err)
         except AttributeError:
             return False, "Invalid request parameters"
         return True, None

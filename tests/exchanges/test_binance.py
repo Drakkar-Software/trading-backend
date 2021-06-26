@@ -17,6 +17,7 @@ import pytest
 import mock
 import ccxt.async_support
 import trading_backend.exchanges as exchanges
+import trading_backend
 from tests import binance_exchange
 
 
@@ -74,4 +75,10 @@ async def test_is_valid_account(binance_exchange):
                            mock.AsyncMock(return_value={"rebateWorking": True, "ifNewUser": True})) \
             as sapi_get_apireferral_ifnewuser_mock:
         assert (await exchange.is_valid_account()) == (True, None)
+        sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)
+    with mock.patch.object(exchange._exchange.connector.client, "sapi_get_apireferral_ifnewuser",
+                           mock.AsyncMock(side_effect=ccxt.async_support.InvalidNonce())) \
+            as sapi_get_apireferral_ifnewuser_mock:
+        with pytest.raises(trading_backend.TimeSyncError):
+            await exchange.is_valid_account()
         sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)

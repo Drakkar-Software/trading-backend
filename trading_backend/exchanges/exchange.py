@@ -13,6 +13,9 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import ccxt
+
+import trading_backend.errors
 
 
 class Exchange:
@@ -33,6 +36,15 @@ class Exchange:
         return params
 
     async def is_valid_account(self) -> (bool, str):
+        try:
+            return await self._inner_is_valid_account()
+        except ccxt.InvalidNonce as err:
+            raise trading_backend.errors.TimeSyncError(err)
+        except ccxt.ExchangeError as err:
+            raise trading_backend.errors.ExchangeAuthError(err)
+
+    async def _inner_is_valid_account(self) -> (bool, str):
+        await self._exchange.connector.client.fetch_balance()
         return True, None
 
     def _get_id(self):

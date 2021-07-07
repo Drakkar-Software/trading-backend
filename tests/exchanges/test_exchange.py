@@ -14,7 +14,11 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import pytest
+import mock
+import ccxt
+
 import trading_backend.exchanges as exchanges
+import trading_backend.errors
 from tests import default_exchange
 
 
@@ -28,4 +32,18 @@ def test_get_orders_parameters(default_exchange):
 
 @pytest.mark.asyncio
 async def test_is_valid_account(default_exchange):
-    assert await exchanges.Exchange(default_exchange).is_valid_account() == (True, None)
+    exchange = exchanges.Exchange(default_exchange)
+    with mock.patch.object(exchange._exchange.connector.client, "fetch_balance",
+                           mock.AsyncMock(return_value=None)) as fetch_balance_mock:
+        assert await exchange.is_valid_account() == (True, None)
+        fetch_balance_mock.assert_called_once()
+    with mock.patch.object(exchange._exchange.connector.client, "fetch_balance",
+                           mock.AsyncMock(side_effect=ccxt.AuthenticationError)) as fetch_balance_mock:
+        with pytest.raises(trading_backend.errors.ExchangeAuthError):
+            assert await exchange.is_valid_account() == (True, None)
+        fetch_balance_mock.assert_called_once()
+    with mock.patch.object(exchange._exchange.connector.client, "fetch_balance",
+                           mock.AsyncMock(side_effect=ccxt.InvalidNonce)) as fetch_balance_mock:
+        with pytest.raises(trading_backend.errors.TimeSyncError):
+            assert await exchange.is_valid_account() == (True, None)
+        fetch_balance_mock.assert_called_once()

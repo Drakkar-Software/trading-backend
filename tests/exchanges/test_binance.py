@@ -37,7 +37,7 @@ def test_get_orders_parameters(binance_exchange):
 async def test_is_valid_account(binance_exchange):
     exchange = exchanges.Binance(binance_exchange)
     params = {"apiAgentCode": exchange._get_id()}
-    with pytest.raises(ccxt.AuthenticationError):
+    with pytest.raises(trading_backend.ExchangeAuthError):
         await exchange.is_valid_account()
     with mock.patch.object(exchange._exchange.connector.client, "sapi_get_apireferral_ifnewuser",
                            mock.AsyncMock(return_value={"rebateWorking": False})) as sapi_get_apireferral_ifnewuser_mock:

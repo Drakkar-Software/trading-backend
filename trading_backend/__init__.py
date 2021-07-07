@@ -22,10 +22,12 @@ from trading_backend.exchange_factory import (
 )
 from trading_backend import errors
 from trading_backend.errors import (
-    TimeSyncError
+    TimeSyncError,
+    ExchangeAuthError,
 )
 
 __all__ = [
     "create_exchange_backend",
     "TimeSyncError",
+    "ExchangeAuthError",
 ]

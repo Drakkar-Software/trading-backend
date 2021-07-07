@@ -36,7 +36,7 @@ class Binance(exchanges.Exchange):
         params.update({'newClientOrderId': self._get_order_custom_id()})
         return params
 
-    async def is_valid_account(self) -> (bool, str):
+    async def _inner_is_valid_account(self) -> (bool, str):
         try:
             details = await self._exchange.connector.client.sapi_get_apireferral_ifnewuser(
                 params=self._exchange._get_params({
@@ -47,10 +47,6 @@ class Binance(exchanges.Exchange):
                 return False, "This account has a referral code, which is incompatible"
             if not details.get("ifNewUser", False):
                 return False, "This account is not new, which is incompatible"
-        except ccxt.InvalidNonce as err:
-            raise trading_backend.errors.TimeSyncError(err)
         except AttributeError:
             return False, "Invalid request parameters"
-        except ccxt.ExchangeError as err:
-            raise trading_backend.errors.ExchangeAuthError(err)
         return True, None

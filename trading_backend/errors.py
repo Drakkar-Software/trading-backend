@@ -17,3 +17,7 @@
 
 class TimeSyncError(RuntimeError):
     pass
+
+
+class ExchangeAuthError(RuntimeError):
+    pass

@@ -51,4 +51,6 @@ class Binance(exchanges.Exchange):
             raise trading_backend.errors.TimeSyncError(err)
         except AttributeError:
             return False, "Invalid request parameters"
+        except ccxt.ExchangeError as err:
+            raise trading_backend.errors.ExchangeAuthError(err)
         return True, None

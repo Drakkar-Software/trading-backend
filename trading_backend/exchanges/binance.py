@@ -13,16 +13,14 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import ccxt
-
 import trading_backend.exchanges as exchanges
-import trading_backend.errors
 
 
 class Binance(exchanges.Exchange):
     SPOT_ID = "T9698EB7"
     MARGIN_ID = None
     FUTURE_ID = "uquVg2pc"
+    IS_SPONSORING = True
 
     @classmethod
     def get_name(cls):

@@ -18,7 +18,8 @@ PROJECT_NAME = "trading-backend"
 
 from trading_backend import exchange_factory
 from trading_backend.exchange_factory import (
-    create_exchange_backend
+    create_exchange_backend,
+    is_sponsoring,
 )
 from trading_backend import errors
 from trading_backend.errors import (
@@ -28,6 +29,7 @@ from trading_backend.errors import (
 
 __all__ = [
     "create_exchange_backend",
+    "is_sponsoring",
     "TimeSyncError",
     "ExchangeAuthError",
 ]

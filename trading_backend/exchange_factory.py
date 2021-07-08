@@ -20,6 +20,10 @@ def create_exchange_backend(exchange) -> exchanges.Exchange:
     return _get_exchanges().get(exchange.connector.client.name.lower(), exchanges.Exchange)(exchange)
 
 
+def is_sponsoring(exchange_name) -> bool:
+    return _get_exchanges().get(exchange_name.lower(), exchanges.Exchange).is_sponsoring()
+
+
 def _get_exchanges() -> dict:
     return {
         exchange.get_name(): exchange

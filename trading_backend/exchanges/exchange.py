@@ -22,6 +22,7 @@ class Exchange:
     SPOT_ID = None
     MARGIN_ID = None
     FUTURE_ID = None
+    IS_SPONSORING = False
 
     def __init__(self, exchange):
         self._exchange = exchange
@@ -29,6 +30,10 @@ class Exchange:
     @classmethod
     def get_name(cls):
         return 'default'
+
+    @classmethod
+    def is_sponsoring(cls) -> bool:
+        return cls.IS_SPONSORING
 
     def get_orders_parameters(self, params=None) -> dict:
         if params is None:

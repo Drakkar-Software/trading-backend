@@ -27,7 +27,7 @@ class Binance(exchanges.Exchange):
         return 'binance'
 
     def _get_order_custom_id(self):
-        return f"x-{self._get_id()}"
+        return f"x-{self._get_id()}{self._exchange.connector.client.uuid22()}"
 
     def get_orders_parameters(self, params=None) -> dict:
         params = super().get_orders_parameters(params)

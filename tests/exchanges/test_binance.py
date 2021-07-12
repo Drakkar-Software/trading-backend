@@ -27,10 +27,14 @@ def test_get_name(binance_exchange):
 
 def test_get_orders_parameters(binance_exchange):
     exchange = exchanges.Binance(binance_exchange)
-    assert exchange.get_orders_parameters({"a": 1}) == {
-        "a": 1,
-        'newClientOrderId': exchange._get_order_custom_id()
-    }
+    with mock.patch.object(exchange._exchange.connector.client, "uuid22",
+                           mock.Mock(return_value="123456789")) as uuid22_mock:
+        assert exchange.get_orders_parameters({"a": 1}) == {
+            "a": 1,
+            'newClientOrderId': exchange._get_order_custom_id()
+        }
+        # once by get_orders_parameters and once by _get_order_custom_id
+        assert uuid22_mock.call_count == 2
 
 
 @pytest.mark.asyncio

@@ -20,6 +20,7 @@ class Binance(exchanges.Exchange):
     SPOT_ID = "T9698EB7"
     MARGIN_ID = None
     FUTURE_ID = "uquVg2pc"
+    REF_ID = "135007948"
     IS_SPONSORING = True
 
     @classmethod
@@ -42,7 +43,8 @@ class Binance(exchanges.Exchange):
                 })
             )
             if not details.get("rebateWorking", False):
-                return False, "This account has a referral code, which is incompatible"
+                return False, f"This account has a referral id and it is not {self.REF_ID}, " \
+                              f"which is incompatible ({self.REF_ID} or no referral id is required)"
             if not details.get("ifNewUser", False):
                 return False, "This account is not new, which is incompatible"
         except AttributeError:

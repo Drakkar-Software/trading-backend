@@ -13,23 +13,24 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from trading_backend.exchanges import exchange
-from trading_backend.exchanges.exchange import (
-    Exchange
-)
+import trading_backend.exchanges as exchanges
 
-from trading_backend.exchanges import binance
-from trading_backend.exchanges.binance import (
-    Binance
-)
 
-from trading_backend.exchanges import okex
-from trading_backend.exchanges.okex import (
-    OKEx
-)
+class OKEx(exchanges.Exchange):
+    SPOT_ID = "c812bf5944b749BC"
+    MARGIN_ID = "c812bf5944b749BC"
+    FUTURE_ID = "c812bf5944b749BC"
+    IS_SPONSORING = True
 
-__all__ = [
-    "Exchange",
-    "Binance",
-    "OKEx",
-]
+    @classmethod
+    def get_name(cls):
+        return 'okex'
+
+    def get_orders_parameters(self, params=None) -> dict:
+        if self._exchange.connector.client.options.get("brokerId", "") != self._get_id():
+            self._exchange.connector.client.options["brokerId"] = self._get_id()
+        return super().get_orders_parameters(params)
+
+    async def _inner_is_valid_account(self) -> (bool, str):
+        # Nothing to do
+        return True, None

@@ -23,6 +23,11 @@ def binance_exchange():
 
 
 @pytest.fixture
+def okex_exchange():
+    return ExchangeWrapper(ccxt.async_support.okex())
+
+
+@pytest.fixture
 def bybit_exchange():
     return ExchangeWrapper(ccxt.async_support.bybit())
 

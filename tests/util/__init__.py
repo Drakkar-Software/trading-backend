@@ -13,29 +13,3 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from trading_backend.exchanges import exchange
-from trading_backend.exchanges.exchange import (
-    Exchange
-)
-
-from trading_backend.exchanges import binance
-from trading_backend.exchanges.binance import (
-    Binance
-)
-
-from trading_backend.exchanges import okex
-from trading_backend.exchanges.okex import (
-    OKEx
-)
-
-from trading_backend.exchanges import ftx
-from trading_backend.exchanges.ftx import (
-    FTX
-)
-
-__all__ = [
-    "Exchange",
-    "Binance",
-    "OKEx",
-    "FTX",
-]

@@ -17,17 +17,17 @@ import pytest
 import ccxt.async_support
 import trading_backend.exchanges as exchanges
 import tests.util.create_order_tests as create_order_tests
-from tests import okex_exchange
+from tests import ftx_exchange
 
 
-def test_get_name(okex_exchange):
-    assert exchanges.OKEx(okex_exchange).get_name() == ccxt.async_support.okex().name.lower()
+def test_get_name(ftx_exchange):
+    assert exchanges.FTX(ftx_exchange).get_name() == ccxt.async_support.ftx().name.lower()
 
 
 @pytest.mark.asyncio
-async def test_get_orders_parameters(okex_exchange):
-    exchange = exchanges.OKEx(okex_exchange)
+async def test_get_orders_parameters(ftx_exchange):
+    exchange = exchanges.FTX(ftx_exchange)
     await create_order_tests.create_order_mocked_test(exchange,
-                                                      exchange_private_post_order_method_name="privatePostTradeOrder",
-                                                      exchange_request_referral_key="clOrdId",
-                                                      should_contains=True)
+                                                      exchange_private_post_order_method_name="privatePostOrders",
+                                                      exchange_request_referral_key="externalReferralProgram",
+                                                      should_contains=False)

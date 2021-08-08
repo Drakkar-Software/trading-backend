@@ -33,4 +33,4 @@ class OKEx(exchanges.Exchange):
 
     async def _inner_is_valid_account(self) -> (bool, str):
         # Nothing to do
-        return True, None
+        return await super()._inner_is_valid_account()

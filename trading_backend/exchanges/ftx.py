@@ -45,4 +45,4 @@ class FTX(exchanges.Exchange):
         }
         """
         # Seems to be unnecessary because the program name is overwritten in `get_orders_parameters`
-        return True, None
+        return await super()._inner_is_valid_account()

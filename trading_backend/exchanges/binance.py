@@ -43,10 +43,16 @@ class Binance(exchanges.Exchange):
                 })
             )
             if not details.get("rebateWorking", False):
-                return False, f"This account has a referral id and it is not {self.REF_ID}, " \
-                              f"which is incompatible ({self.REF_ID} or no referral id is required)"
+                ref_id = details.get("referrerId", None)
+                if ref_id is not None:
+                    return False, f"This account has a referral id equal to {ref_id} " \
+                                  f"which is incompatible ({self.REF_ID} as referral id or no referral id is required)"
+                return False, f"This account is incompatible, details: {details}. Please report this message to " \
+                              f"admins for investigation. " \
+                              f"An account with {self.REF_ID} as referral id or no referral id is required."
             if not details.get("ifNewUser", False):
-                return False, "This account is not new, which is incompatible"
+                return False, "Binance requires accounts that were created after july 1st 2021, " \
+                              "this account is too old."
         except AttributeError:
             return False, "Invalid request parameters"
         return True, None

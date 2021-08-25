@@ -24,4 +24,4 @@ def test_get_name(gateio_exchange):
 
 def test_get_orders_parameters(gateio_exchange):
     exchange = exchanges.GateIO(gateio_exchange)
-    assert gateio_exchange.get_headers() == {exchange.HEADER_KEY: exchange._get_id()}
+    assert exchange.get_headers() == {exchange.HEADER_KEY: exchange._get_id()}

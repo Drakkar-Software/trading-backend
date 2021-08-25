@@ -35,6 +35,9 @@ class Exchange:
     def is_sponsoring(cls) -> bool:
         return cls.IS_SPONSORING
 
+    def get_headers(self) -> dict:
+        return {}
+
     def get_orders_parameters(self, params=None) -> dict:
         if params is None:
             params = {}

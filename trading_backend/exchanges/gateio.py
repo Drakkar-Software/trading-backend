@@ -13,35 +13,23 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from trading_backend.exchanges import exchange
-from trading_backend.exchanges.exchange import (
-    Exchange
-)
+import trading_backend.exchanges as exchanges
 
-from trading_backend.exchanges import binance
-from trading_backend.exchanges.binance import (
-    Binance
-)
 
-from trading_backend.exchanges import okex
-from trading_backend.exchanges.okex import (
-    OKEx
-)
+class GateIO(exchanges.Exchange):
+    SPOT_ID = "Octobot"
+    MARGIN_ID = "Octobot"
+    FUTURE_ID = "Octobot"
+    IS_SPONSORING = True
+    HEADER_KEY = "X-Gate-Channel-Id"
 
-from trading_backend.exchanges import ftx
-from trading_backend.exchanges.ftx import (
-    FTX
-)
+    @classmethod
+    def get_name(cls):
+        return 'gateio'
 
-from trading_backend.exchanges import gateio
-from trading_backend.exchanges.gateio import (
-    GateIO
-)
+    def get_headers(self):
+        return {self.HEADER_KEY: self._get_id()}
 
-__all__ = [
-    "Exchange",
-    "Binance",
-    "OKEx",
-    "FTX",
-    "GateIO",
-]
+    async def _inner_is_valid_account(self) -> (bool, str):
+        # Nothing to do
+        return await super()._inner_is_valid_account()

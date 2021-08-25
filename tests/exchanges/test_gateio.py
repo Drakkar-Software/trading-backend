@@ -13,35 +13,15 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-from trading_backend.exchanges import exchange
-from trading_backend.exchanges.exchange import (
-    Exchange
-)
+import ccxt.async_support
+import trading_backend.exchanges as exchanges
+from tests import gateio_exchange
 
-from trading_backend.exchanges import binance
-from trading_backend.exchanges.binance import (
-    Binance
-)
 
-from trading_backend.exchanges import okex
-from trading_backend.exchanges.okex import (
-    OKEx
-)
+def test_get_name(gateio_exchange):
+    assert exchanges.GateIO(gateio_exchange).get_name() == ccxt.async_support.gateio().name.lower()
 
-from trading_backend.exchanges import ftx
-from trading_backend.exchanges.ftx import (
-    FTX
-)
 
-from trading_backend.exchanges import gateio
-from trading_backend.exchanges.gateio import (
-    GateIO
-)
-
-__all__ = [
-    "Exchange",
-    "Binance",
-    "OKEx",
-    "FTX",
-    "GateIO",
-]
+def test_get_orders_parameters(gateio_exchange):
+    exchange = exchanges.GateIO(gateio_exchange)
+    assert gateio_exchange.get_headers() == {exchange.HEADER_KEY: exchange._get_id()}

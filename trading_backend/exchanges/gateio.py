@@ -25,7 +25,7 @@ class GateIO(exchanges.Exchange):
 
     @classmethod
     def get_name(cls):
-        return 'gateio'
+        return 'gate.io'
 
     def get_headers(self):
         return {self.HEADER_KEY: self._get_id()}

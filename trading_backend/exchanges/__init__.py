@@ -38,10 +38,16 @@ from trading_backend.exchanges.gateio import (
     GateIO
 )
 
+from trading_backend.exchanges import huobi
+from trading_backend.exchanges.huobi import (
+    Huobi
+)
+
 __all__ = [
     "Exchange",
     "Binance",
     "OKEx",
     "FTX",
     "GateIO",
+    "Huobi",
 ]

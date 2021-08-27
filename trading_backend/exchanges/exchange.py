@@ -28,7 +28,7 @@ class Exchange:
         self._exchange = exchange
 
         # add backend headers
-        self._exchange.add_headers(self.get_headers())
+        self._exchange.connector.add_headers(self.get_headers())
 
     @classmethod
     def get_name(cls):

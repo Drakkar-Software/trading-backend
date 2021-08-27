@@ -27,7 +27,8 @@ def test_get_name(ftx_exchange):
 @pytest.mark.asyncio
 async def test_get_orders_parameters(ftx_exchange):
     exchange = exchanges.FTX(ftx_exchange)
-    await create_order_tests.create_order_mocked_test(exchange,
-                                                      exchange_private_post_order_method_name="privatePostOrders",
-                                                      exchange_request_referral_key="externalReferralProgram",
-                                                      should_contains=False)
+    await create_order_tests.create_order_mocked_test_args(
+        exchange,
+        exchange_private_post_order_method_name="privatePostOrders",
+        exchange_request_referral_key="externalReferralProgram",
+        should_contains=False)

@@ -14,14 +14,21 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import ccxt.async_support
+import pytest
+
 import trading_backend.exchanges as exchanges
+import tests.util.create_order_tests as create_order_tests
 from tests import gateio_exchange
 
 
 def test_get_name(gateio_exchange):
-    assert exchanges.GateIO(gateio_exchange).get_name() == ccxt.async_support.gateio().name.lower()
+    assert exchanges.GateIO(gateio_exchange).get_name() == ccxt.async_support.gateio().id.lower()
 
 
-def test_get_orders_parameters(gateio_exchange):
+@pytest.mark.asyncio
+async def test_orders_parameters(gateio_exchange):
     exchange = exchanges.GateIO(gateio_exchange)
     assert exchange.get_headers() == {exchange.HEADER_KEY: exchange._get_id()}
+    await create_order_tests.exchange_requests_contains_headers_test(exchange,
+                                                                     exchange_header_referral_key=exchange.HEADER_KEY,
+                                                                     exchange_header_referral_value=exchange._get_id())

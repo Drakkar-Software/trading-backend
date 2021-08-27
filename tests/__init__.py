@@ -54,6 +54,10 @@ class ExchangeConnector:
     def __init__(self, ccxt_exchange):
         self.client = ccxt_exchange
 
+    def add_headers(self, headers_dict):
+        for header_key, header_value in headers_dict.items():
+            self.client.headers[header_key] = header_value
+
 
 class ExchangeManager:
     def __init__(self, is_margin=False, is_future=False):

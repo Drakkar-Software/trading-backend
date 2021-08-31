@@ -18,16 +18,18 @@ import pytest
 import ccxt.async_support
 import trading_backend.exchanges as exchanges
 import tests.util.create_order_tests as create_order_tests
-from tests import huobi_exchange
+from tests import huobipro_exchange
 
 
-def test_get_name(huobi_exchange):
-    assert exchanges.Huobi(huobi_exchange).get_name() == ccxt.async_support.huobi().name.lower()
+def test_get_name(huobipro_exchange):
+    # huobi on ccxt
+    assert exchanges.HuobiPro(huobipro_exchange).get_name() != ccxt.async_support.huobipro().name.lower()
+    assert exchanges.HuobiPro(huobipro_exchange).get_name() == "huobipro"
 
 
 @pytest.mark.asyncio
-async def test_get_orders_parameters(huobi_exchange):
-    exchange = exchanges.Huobi(huobi_exchange)
+async def test_get_orders_parameters(huobipro_exchange):
+    exchange = exchanges.HuobiPro(huobipro_exchange)
     with mock.patch.object(exchange._exchange.connector.client,
                            "fetch_accounts", mock.AsyncMock(return_value=[{'id': 1}])):
         await create_order_tests.create_order_mocked_test_args(

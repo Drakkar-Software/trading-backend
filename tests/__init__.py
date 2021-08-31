@@ -29,6 +29,11 @@ def okex_exchange():
 
 @pytest.fixture
 def huobi_exchange():
+    return ExchangeWrapper(ccxt.async_support.huobi())
+
+
+@pytest.fixture
+def huobipro_exchange():
     return ExchangeWrapper(ccxt.async_support.huobipro())
 
 

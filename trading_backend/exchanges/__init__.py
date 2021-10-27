@@ -53,6 +53,11 @@ from trading_backend.exchanges.huobipro import (
     HuobiPro
 )
 
+from trading_backend.exchanges import kucoin
+from trading_backend.exchanges.kucoin import (
+    Kucoin
+)
+
 __all__ = [
     "Exchange",
     "Binance",
@@ -62,4 +67,5 @@ __all__ = [
     "GateIO",
     "Huobi",
     "HuobiPro",
+    "Kucoin",
 ]

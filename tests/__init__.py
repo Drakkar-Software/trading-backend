@@ -58,6 +58,11 @@ def gateio_exchange():
 
 
 @pytest.fixture
+def kucoin_exchange():
+    return ExchangeWrapper(ccxt.async_support.kucoin())
+
+
+@pytest.fixture
 def default_exchange():
     """
     :return: An exchange for which there is no exchange implementation in trading_backend.exchanges

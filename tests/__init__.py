@@ -58,6 +58,11 @@ def gateio_exchange():
 
 
 @pytest.fixture
+def bybit_exchange():
+    return ExchangeWrapper(ccxt.async_support.bybit())
+
+
+@pytest.fixture
 def default_exchange():
     """
     :return: An exchange for which there is no exchange implementation in trading_backend.exchanges

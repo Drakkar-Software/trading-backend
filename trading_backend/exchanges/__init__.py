@@ -33,6 +33,11 @@ from trading_backend.exchanges.ftx import (
     FTX
 )
 
+from trading_backend.exchanges import bybit
+from trading_backend.exchanges.bybit import (
+    Bybit
+)
+
 from trading_backend.exchanges import ascendex
 from trading_backend.exchanges.ascendex import (
     Ascendex
@@ -56,6 +61,7 @@ from trading_backend.exchanges.huobipro import (
 __all__ = [
     "Exchange",
     "Binance",
+    "Bybit",
     "OKEx",
     "FTX",
     "Ascendex",

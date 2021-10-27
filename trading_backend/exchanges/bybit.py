@@ -17,18 +17,25 @@ import trading_backend.exchanges as exchanges
 
 
 class Bybit(exchanges.Exchange):
-    SPOT_ID = None
+    SPOT_ID = "octobot"
     MARGIN_ID = None
     FUTURE_ID = "octobot"
     IS_SPONSORING = True
-    HEADER_KEY = "tag"
+    HEADER_SPOT_KEY = "agentSource"
+    HEADER_FUTURE_KEY = "tag"
 
     @classmethod
     def get_name(cls):
         return 'bybit'
 
     def get_headers(self):
-        return {self.HEADER_KEY: self._get_id()} if self._exchange.exchange_manager.is_future else {}
+        return {self.HEADER_FUTURE_KEY: self._get_id()} if self._exchange.exchange_manager.is_future else {}
+
+    def get_orders_parameters(self, params=None) -> dict:
+        params = super().get_orders_parameters(params)
+        if not self._exchange.exchange_manager.is_future and not self._exchange.exchange_manager.is_margin:
+            params.update({self.HEADER_SPOT_KEY: self._get_id()})
+        return params
 
     async def _inner_is_valid_account(self) -> (bool, str):
         # Nothing to do

@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import mock
+
 import trading_backend.exchanges as exchanges
 
 
@@ -21,26 +22,34 @@ async def create_order_mocked_test_args(exchange: exchanges.Exchange,
                                         exchange_private_post_order_method_name: str,
                                         exchange_request_referral_key: str,
                                         should_contains: bool = True,
+                                        result_is_list: bool = False,
                                         symbol: str = "BTC/USDT",
                                         amount: int = 1,
                                         price: int = 1):
     with mock.patch.object(exchange._exchange.connector.client,
-                           exchange_private_post_order_method_name,
-                           mock.AsyncMock(return_value={})) as post_order_mock:
+                           "check_required_credentials",
+                           mock.Mock(return_value=False)), \
+            mock.patch.object(exchange._exchange.connector.client,
+                              exchange_private_post_order_method_name,
+                              mock.AsyncMock(return_value={})) as post_order_mock:
         # without referral patch
         await exchange._exchange.connector.client.create_limit_buy_order(symbol, amount, price)
+        result = post_order_mock.call_args[0][0].get(exchange_request_referral_key, "") \
+            if not result_is_list else post_order_mock.call_args[0][0][0].get(exchange_request_referral_key, "")
         if should_contains:
-            assert exchange._get_id() not in post_order_mock.call_args[0][0].get(exchange_request_referral_key, "")
+            assert exchange._get_id() not in result
         else:
-            assert exchange._get_id() != post_order_mock.call_args[0][0].get(exchange_request_referral_key, "")
+            assert exchange._get_id() != result
 
         # with referral patch
         await exchange._exchange.connector.client.create_limit_buy_order(symbol, amount, price,
                                                                          params=exchange.get_orders_parameters())
+        result = post_order_mock.call_args[0][0].get(exchange_request_referral_key, "") \
+            if not result_is_list else post_order_mock.call_args[0][0][0].get(exchange_request_referral_key, "")
         if should_contains:
-            assert exchange._get_id() in post_order_mock.call_args[0][0].get(exchange_request_referral_key, "")
+            assert exchange._get_id() in result
         else:
-            assert exchange._get_id() == post_order_mock.call_args[0][0].get(exchange_request_referral_key, "")
+            assert exchange._get_id() == result
 
 
 async def exchange_requests_contains_headers_test(exchange: exchanges.Exchange,

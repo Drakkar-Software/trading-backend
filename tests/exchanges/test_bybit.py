@@ -28,14 +28,19 @@ def test_get_name(bybit_exchange):
 @pytest.mark.asyncio
 async def test_spot_orders_parameters(bybit_exchange):
     exchange = exchanges.Bybit(bybit_exchange)
-    assert exchange.get_headers() == {}  # TODO
+    await create_order_tests.create_order_mocked_test_args(
+        exchange,
+        exchange_private_post_order_method_name="privateLinearPostOrderCreate",
+        exchange_request_referral_key=exchange.HEADER_SPOT_KEY,
+        should_contains=False)
 
 
 @pytest.mark.asyncio
 async def test_future_orders_parameters(bybit_exchange):
     bybit_exchange.exchange_manager.is_future = True
     exchange = exchanges.Bybit(bybit_exchange)
-    assert exchange.get_headers() == {exchange.HEADER_KEY: exchange._get_id()}
-    await create_order_tests.exchange_requests_contains_headers_test(exchange,
-                                                                     exchange_header_referral_key=exchange.HEADER_KEY,
-                                                                     exchange_header_referral_value=exchange._get_id())
+    assert exchange.get_headers() == {exchange.HEADER_FUTURE_KEY: exchange._get_id()}
+    await create_order_tests.exchange_requests_contains_headers_test(
+        exchange,
+        exchange_header_referral_key=exchange.HEADER_FUTURE_KEY,
+        exchange_header_referral_value=exchange._get_id())

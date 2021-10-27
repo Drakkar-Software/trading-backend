@@ -43,6 +43,11 @@ def ftx_exchange():
 
 
 @pytest.fixture
+def ascendex_exchange():
+    return ExchangeWrapper(ccxt.async_support.ascendex())
+
+
+@pytest.fixture
 def bybit_exchange():
     return ExchangeWrapper(ccxt.async_support.bybit())
 

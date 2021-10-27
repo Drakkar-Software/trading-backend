@@ -33,6 +33,11 @@ from trading_backend.exchanges.ftx import (
     FTX
 )
 
+from trading_backend.exchanges import ascendex
+from trading_backend.exchanges.ascendex import (
+    Ascendex
+)
+
 from trading_backend.exchanges import gateio
 from trading_backend.exchanges.gateio import (
     GateIO
@@ -53,6 +58,7 @@ __all__ = [
     "Binance",
     "OKEx",
     "FTX",
+    "Ascendex",
     "GateIO",
     "Huobi",
     "HuobiPro",

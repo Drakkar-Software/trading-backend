@@ -13,6 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import mock
 import pytest
 import ccxt.async_support
 import trading_backend.exchanges as exchanges
@@ -29,6 +30,7 @@ async def test_get_orders_parameters(okex_exchange):
     exchange = exchanges.OKEx(okex_exchange)
     await create_order_tests.create_order_mocked_test_args(
         exchange,
-        exchange_private_post_order_method_name="privatePostTradeOrder",
+        exchange_private_post_order_method_name="privatePostTradeBatchOrders",
         exchange_request_referral_key="clOrdId",
-        should_contains=True)
+        should_contains=True,
+        result_is_list=True)

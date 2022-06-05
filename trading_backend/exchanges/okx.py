@@ -16,7 +16,7 @@
 import trading_backend.exchanges as exchanges
 
 
-class OKEx(exchanges.Exchange):
+class OKX(exchanges.Exchange):
     SPOT_ID = "c812bf5944b749BC"
     MARGIN_ID = "c812bf5944b749BC"
     FUTURE_ID = "c812bf5944b749BC"
@@ -24,7 +24,7 @@ class OKEx(exchanges.Exchange):
 
     @classmethod
     def get_name(cls):
-        return 'okex'
+        return 'okx'
 
     def get_orders_parameters(self, params=None) -> dict:
         if self._exchange.connector.client.options.get("brokerId", "") != self._get_id():

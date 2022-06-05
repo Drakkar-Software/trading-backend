@@ -32,6 +32,6 @@ async def test_get_orders_parameters(huobi_exchange):
                            "fetch_accounts", mock.AsyncMock(return_value=[{'id': 1}])):
         await create_order_tests.create_order_mocked_test_args(
             exchange,
-            exchange_private_post_order_method_name="privatePostOrderOrdersPlace",
+            exchange_private_post_order_method_name="spotPrivatePostV1OrderOrdersPlace",
             exchange_request_referral_key="client-order-id",
             should_contains=True)

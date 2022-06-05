@@ -23,9 +23,9 @@ from trading_backend.exchanges.binance import (
     Binance
 )
 
-from trading_backend.exchanges import okex
-from trading_backend.exchanges.okex import (
-    OKEx
+from trading_backend.exchanges import okx
+from trading_backend.exchanges.okx import (
+    OKX
 )
 
 from trading_backend.exchanges import ftx
@@ -62,7 +62,7 @@ __all__ = [
     "Exchange",
     "Binance",
     "Bybit",
-    "OKEx",
+    "OKX",
     "FTX",
     "Ascendex",
     "GateIO",

@@ -18,16 +18,16 @@ import pytest
 import ccxt.async_support
 import trading_backend.exchanges as exchanges
 import tests.util.create_order_tests as create_order_tests
-from tests import okex_exchange
+from tests import okx_exchange
 
 
-def test_get_name(okex_exchange):
-    assert exchanges.OKEx(okex_exchange).get_name() == ccxt.async_support.okex().name.lower()
+def test_get_name(okx_exchange):
+    assert exchanges.OKX(okx_exchange).get_name() == ccxt.async_support.okx().name.lower()
 
 
 @pytest.mark.asyncio
-async def test_get_orders_parameters(okex_exchange):
-    exchange = exchanges.OKEx(okex_exchange)
+async def test_get_orders_parameters(okx_exchange):
+    exchange = exchanges.OKX(okx_exchange)
     await create_order_tests.create_order_mocked_test_args(
         exchange,
         exchange_private_post_order_method_name="privatePostTradeBatchOrders",

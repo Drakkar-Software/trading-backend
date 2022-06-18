@@ -15,6 +15,7 @@
 #  License along with this library.
 import ccxt.async_support
 import pytest
+import mock
 
 import trading_backend.exchanges as exchanges
 import tests.util.create_order_tests as create_order_tests
@@ -28,19 +29,26 @@ def test_get_name(bybit_exchange):
 @pytest.mark.asyncio
 async def test_spot_orders_parameters(bybit_exchange):
     exchange = exchanges.Bybit(bybit_exchange)
-    await create_order_tests.create_order_mocked_test_args(
-        exchange,
-        exchange_private_post_order_method_name="privateLinearPostOrderCreate",
-        exchange_request_referral_key=exchange.HEADER_SPOT_KEY,
-        should_contains=False)
+    await exchange._exchange.connector.client.load_markets()
+    exchange._exchange.connector.client.market("BTC/USDT:USDT")['spot'] = True
+    with mock.patch.object(exchange._exchange.connector.client,
+                           "fetch", mock.AsyncMock(return_value=[])):
+        await create_order_tests.create_order_mocked_test_args(
+            exchange,
+            exchange_private_post_order_method_name="privatePostSpotV1Order",
+            exchange_request_referral_key="agentSource",
+            should_contains=False)
 
 
 @pytest.mark.asyncio
 async def test_future_orders_parameters(bybit_exchange):
     bybit_exchange.exchange_manager.is_future = True
     exchange = exchanges.Bybit(bybit_exchange)
-    assert exchange.get_headers() == {exchange.HEADER_FUTURE_KEY: exchange._get_id()}
-    await create_order_tests.exchange_requests_contains_headers_test(
-        exchange,
-        exchange_header_referral_key=exchange.HEADER_FUTURE_KEY,
-        exchange_header_referral_value=exchange._get_id())
+    await exchange._exchange.connector.client.load_markets()
+    with mock.patch.object(exchange._exchange.connector.client,
+                           "fetch", mock.AsyncMock(return_value=[])):
+        await create_order_tests.create_order_mocked_test_args(
+            exchange,
+            exchange_private_post_order_method_name="privatePostPrivateLinearOrderCreate",
+            exchange_request_referral_key="Referer",
+            should_contains=False)

@@ -23,7 +23,7 @@ async def create_order_mocked_test_args(exchange: exchanges.Exchange,
                                         exchange_request_referral_key: str,
                                         should_contains: bool = True,
                                         result_is_list: bool = False,
-                                        symbol: str = "BTC/USDT",
+                                        symbol: str = "BTC/USDT:USDT",
                                         amount: int = 1,
                                         price: int = 1):
     with mock.patch.object(exchange._exchange.connector.client,

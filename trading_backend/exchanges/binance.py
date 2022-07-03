@@ -13,6 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import aiohttp.streams
+
 import trading_backend.exchanges as exchanges
 
 
@@ -36,6 +38,7 @@ class Binance(exchanges.Exchange):
         return params
 
     async def _inner_is_valid_account(self) -> (bool, str):
+        details = None
         try:
             details = await self._exchange.connector.client.sapi_get_apireferral_ifnewuser(
                 params=self._exchange._get_params({
@@ -54,5 +57,7 @@ class Binance(exchanges.Exchange):
                 return False, "Binance requires accounts that were created after july 1st 2021, " \
                               "this account is too old."
         except AttributeError:
+            if isinstance(details, aiohttp.streams.StreamReader):
+                return False, "Error when fetching exchange data (unreadable response)"
             return False, "Invalid request parameters"
         return True, None

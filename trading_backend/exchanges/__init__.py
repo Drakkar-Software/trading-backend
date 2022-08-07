@@ -58,6 +58,11 @@ from trading_backend.exchanges.huobipro import (
     HuobiPro
 )
 
+from trading_backend.exchanges import bitget
+from trading_backend.exchanges.bitget import (
+    Bitget
+)
+
 __all__ = [
     "Exchange",
     "Binance",
@@ -68,4 +73,5 @@ __all__ = [
     "GateIO",
     "Huobi",
     "HuobiPro",
+    "Bitget",
 ]

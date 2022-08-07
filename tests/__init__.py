@@ -63,6 +63,11 @@ def bybit_exchange():
 
 
 @pytest.fixture
+def bitget_exchange():
+    return ExchangeWrapper(ccxt.async_support.bitget())
+
+
+@pytest.fixture
 def default_exchange():
     """
     :return: An exchange for which there is no exchange implementation in trading_backend.exchanges

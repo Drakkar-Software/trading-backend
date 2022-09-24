@@ -63,6 +63,11 @@ from trading_backend.exchanges.bitget import (
     Bitget
 )
 
+from trading_backend.exchanges import phemex
+from trading_backend.exchanges.phemex import (
+    Phemex
+)
+
 __all__ = [
     "Exchange",
     "Binance",
@@ -74,4 +79,5 @@ __all__ = [
     "Huobi",
     "HuobiPro",
     "Bitget",
+    "Phemex",
 ]

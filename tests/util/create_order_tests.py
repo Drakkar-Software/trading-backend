@@ -25,13 +25,14 @@ async def create_order_mocked_test_args(exchange: exchanges.Exchange,
                                         result_is_list: bool = False,
                                         symbol: str = "BTC/USDT",
                                         amount: int = 1,
-                                        price: int = 1):
+                                        price: int = 1,
+                                        post_order_mock_return_value: dict = None):
     with mock.patch.object(exchange._exchange.connector.client,
                            "check_required_credentials",
                            mock.Mock(return_value=False)), \
             mock.patch.object(exchange._exchange.connector.client,
                               exchange_private_post_order_method_name,
-                              mock.AsyncMock(return_value={})) as post_order_mock:
+                              mock.AsyncMock(return_value=post_order_mock_return_value or {})) as post_order_mock:
         # without referral patch
         await exchange._exchange.connector.client.create_limit_buy_order(symbol, amount, price)
         result = post_order_mock.call_args[0][0].get(exchange_request_referral_key, "") \

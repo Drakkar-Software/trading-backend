@@ -26,11 +26,12 @@ def test_get_name(bybit_exchange):
 
 
 @pytest.mark.asyncio
-async def test_spot_orders_parameters(bybit_exchange):
+async def test_future_orders_parameters(bybit_exchange):
     exchange = exchanges.Bybit(bybit_exchange)
     await create_order_tests.create_order_mocked_test_args(
         exchange,
-        exchange_private_post_order_method_name="privateLinearPostOrderCreate",
+        symbol="BTC/USDT:USDT",
+        exchange_private_post_order_method_name="privatePostPrivateLinearStopOrderCreate",
         exchange_request_referral_key=exchange.HEADER_SPOT_KEY,
         should_contains=False)
 

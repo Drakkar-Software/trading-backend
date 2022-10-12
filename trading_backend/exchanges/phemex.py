@@ -32,6 +32,6 @@ class Phemex(exchanges.Exchange):
         return f"{self._get_id()}{self._exchange.connector.client.uuid16()}"
 
     def get_orders_parameters(self, params=None) -> dict:
-        params = super().get_orders_parameters(params)
-        params.update({'clOrdID': self._get_order_custom_id()})
-        return params
+        if self._exchange.connector.client.options.get("brokerId", "") != self._get_id():
+            self._exchange.connector.client.options["brokerId"] = self._get_id()
+        return super().get_orders_parameters(params)

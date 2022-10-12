@@ -33,4 +33,5 @@ async def test_get_orders_parameters(okx_exchange):
         exchange_private_post_order_method_name="privatePostTradeBatchOrders",
         exchange_request_referral_key="clOrdId",
         should_contains=True,
-        result_is_list=True)
+        result_is_list=True,
+        post_order_mock_return_value={'data': [{}]})

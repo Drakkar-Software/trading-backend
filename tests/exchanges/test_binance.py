@@ -23,6 +23,7 @@ from tests import binance_exchange
 
 def test_get_name(binance_exchange):
     assert exchanges.Binance(binance_exchange).get_name() == ccxt.async_support.binance().name.lower()
+    assert ccxt.async_support.binance().timeframes != []
 
 
 def test_get_orders_parameters(binance_exchange):

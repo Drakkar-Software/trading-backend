@@ -27,12 +27,6 @@ from trading_backend.exchanges import okx
 from trading_backend.exchanges.okx import (
     OKX
 )
-
-from trading_backend.exchanges import ftx
-from trading_backend.exchanges.ftx import (
-    FTX
-)
-
 from trading_backend.exchanges import bybit
 from trading_backend.exchanges.bybit import (
     Bybit
@@ -73,7 +67,6 @@ __all__ = [
     "Binance",
     "Bybit",
     "OKX",
-    "FTX",
     "Ascendex",
     "GateIO",
     "Huobi",

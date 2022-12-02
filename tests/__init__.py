@@ -38,11 +38,6 @@ def huobipro_exchange():
 
 
 @pytest.fixture
-def ftx_exchange():
-    return ExchangeWrapper(ccxt.async_support.ftx())
-
-
-@pytest.fixture
 def ascendex_exchange():
     return ExchangeWrapper(ccxt.async_support.ascendex())
 

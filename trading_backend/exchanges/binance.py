@@ -19,9 +19,12 @@ import trading_backend.exchanges as exchanges
 
 
 class Binance(exchanges.Exchange):
+    LEGACY_SPOT_ID = "T9698EB7"
     SPOT_ID = "HR452G85"
     MARGIN_ID = None
+    LEGACY_FUTURE_ID = "uquVg2pc"
     FUTURE_ID = "uquVg2pc"
+    LEGACY_REF_ID = "135007948"
     REF_ID = "528112221"
     IS_SPONSORING = True
 
@@ -32,19 +35,41 @@ class Binance(exchanges.Exchange):
     def _get_order_custom_id(self):
         return f"x-{self._get_id()}{self._exchange.connector.client.uuid22()}"
 
+    @classmethod
+    def use_legacy_ids(cls):
+        cls.SPOT_ID = cls.LEGACY_SPOT_ID
+        cls.FUTURE_ID = cls.LEGACY_FUTURE_ID
+
     def get_orders_parameters(self, params=None) -> dict:
         params = super().get_orders_parameters(params)
         params.update({'newClientOrderId': self._get_order_custom_id()})
         return params
 
+    async def _ensure_broker_status(self):
+        try:
+            details = await self._get_account_referral_details()
+            if not details.get("rebateWorking", False):
+                if (ref_id := details.get("referrerId", None)) and ref_id == self.LEGACY_REF_ID:
+                    self.use_legacy_ids()
+                    details = await self._get_account_referral_details()
+                    if details.get("rebateWorking", False):
+                        return "Using legacy broker id"
+                return f"Broker rebate not working: {details}"
+            return f"Broker rebate is enabled."
+        except Exception as err:
+            return f"Broker rebate check error: {err}"
+
+    async def _get_account_referral_details(self) -> dict:
+        return await self._exchange.connector.client.sapi_get_apireferral_ifnewuser(
+            params=self._exchange._get_params({
+                "apiAgentCode": self._get_id()
+            })
+        )
+
     async def _inner_is_valid_account(self) -> (bool, str):
         details = None
         try:
-            details = await self._exchange.connector.client.sapi_get_apireferral_ifnewuser(
-                params=self._exchange._get_params({
-                    "apiAgentCode": self._get_id()
-                })
-            )
+            details = await self._get_account_referral_details()
             if not details.get("rebateWorking", False):
                 ref_id = details.get("referrerId", None)
                 if ref_id is not None:

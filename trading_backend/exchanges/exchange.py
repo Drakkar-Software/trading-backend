@@ -38,6 +38,13 @@ class Exchange:
     def is_sponsoring(cls) -> bool:
         return cls.IS_SPONSORING
 
+    async def initialize(self) -> str:
+        default = f"{self.get_name().capitalize()} backend initialized."
+        return f"{default} {await self._ensure_broker_status()}" if self.is_sponsoring() else default
+
+    async def _ensure_broker_status(self):
+        return f"Broker rebate is enabled."
+
     def get_headers(self) -> dict:
         return {}
 

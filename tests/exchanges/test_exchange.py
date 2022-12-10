@@ -47,3 +47,18 @@ async def test_is_valid_account(default_exchange):
         with pytest.raises(trading_backend.errors.TimeSyncError):
             assert await exchange.is_valid_account() == (True, None)
         fetch_balance_mock.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_initialize(default_exchange):
+    exchange = exchanges.Exchange(default_exchange)
+    init_result = await exchange.initialize()
+    assert exchange.get_name().capitalize() in init_result
+    assert "Broker" not in init_result
+
+
+@pytest.mark.asyncio
+async def test_ensure_broker_status(default_exchange):
+    init_result = await exchanges.Exchange(default_exchange)._ensure_broker_status()
+    assert "Broker" in init_result
+    assert "enabled" in init_result

@@ -13,6 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import copy
+
 import pytest
 import mock
 import ccxt.async_support
@@ -86,3 +88,60 @@ async def test_is_valid_account(binance_exchange):
         with pytest.raises(trading_backend.TimeSyncError):
             await exchange.is_valid_account()
         sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)
+
+
+@pytest.mark.asyncio
+async def test_ensure_broker_status(binance_exchange):
+    exchange = exchanges.Binance(binance_exchange)
+    with mock.patch.object(exchange, "use_legacy_ids", mock.Mock()) as use_legacy_ids_mock:
+        with mock.patch.object(exchange, "_get_account_referral_details", mock.AsyncMock(side_effect=RuntimeError)) \
+                as _get_account_referral_details_mock:
+            assert "check error" in await exchange._ensure_broker_status()
+            _get_account_referral_details_mock.assert_awaited_once()
+        with mock.patch.object(exchange, "_get_account_referral_details",
+                               mock.AsyncMock(return_value={"rebateWorking": True, "ifNewUser": True})) as \
+                _get_account_referral_details_mock:
+            assert "is enabled" in await exchange._ensure_broker_status()
+            _get_account_referral_details_mock.assert_awaited_once()
+            use_legacy_ids_mock.assert_not_called()
+        with mock.patch.object(exchange, "_get_account_referral_details",
+                               mock.AsyncMock(return_value={"rebateWorking": False, "ifNewUser": True})) as \
+                _get_account_referral_details_mock:
+            assert "not working" in await exchange._ensure_broker_status()
+            _get_account_referral_details_mock.assert_awaited_once()
+            use_legacy_ids_mock.assert_not_called()
+        with mock.patch.object(exchange, "_get_account_referral_details",
+                               mock.AsyncMock(return_value={"rebateWorking": False, "ifNewUser": True,
+                                                            "referrerId": exchange.LEGACY_REF_ID})) as \
+                _get_account_referral_details_mock:
+            assert "not working" in await exchange._ensure_broker_status()
+            assert _get_account_referral_details_mock.await_count == 2
+            use_legacy_ids_mock.assert_called_once()
+            use_legacy_ids_mock.reset_mock()
+
+        async def _dep_on_id_mock():
+            if use_legacy_ids_mock.call_count != 0:
+                return {"rebateWorking": True, "ifNewUser": True, "referrerId": exchange.LEGACY_REF_ID}
+            return {"rebateWorking": False, "ifNewUser": True, "referrerId": exchange.LEGACY_REF_ID}
+        with mock.patch.object(exchange, "_get_account_referral_details",
+                               mock.AsyncMock(side_effect=_dep_on_id_mock)) as \
+                _get_account_referral_details_mock:
+            assert "legacy broker id" in await exchange._ensure_broker_status()
+            assert _get_account_referral_details_mock.await_count == 2
+            use_legacy_ids_mock.assert_called_once()
+            use_legacy_ids_mock.reset_mock()
+
+def test_use_legacy_ids(binance_exchange):
+    exchange = exchanges.Binance(binance_exchange)
+    origin_spot_id = copy.copy(exchange.SPOT_ID)
+    origin_legacy_spot_id = copy.copy(exchange.LEGACY_SPOT_ID)
+    origin_future_id = copy.copy(exchange.FUTURE_ID)
+    origin_legacy_future_id = copy.copy(exchange.LEGACY_FUTURE_ID)
+    assert exchange.SPOT_ID == origin_spot_id
+    assert exchange._get_id() == origin_spot_id
+    assert exchange.FUTURE_ID == origin_future_id
+    assert origin_legacy_spot_id != origin_spot_id
+    exchange.use_legacy_ids()
+    assert exchange.SPOT_ID == origin_legacy_spot_id
+    assert exchange._get_id() == origin_legacy_spot_id
+    assert exchange.FUTURE_ID == origin_legacy_future_id

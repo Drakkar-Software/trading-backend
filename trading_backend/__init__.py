@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-VERSION = "1.0.16"
+VERSION = "1.0.17"
 PROJECT_NAME = "trading-backend"
 
 from trading_backend import exchange_factory

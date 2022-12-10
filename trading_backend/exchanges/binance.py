@@ -22,7 +22,7 @@ class Binance(exchanges.Exchange):
     SPOT_ID = "HR452G85"
     MARGIN_ID = None
     FUTURE_ID = "uquVg2pc"
-    REF_ID = "135007948"
+    REF_ID = "528112221"
     IS_SPONSORING = True
 
     @classmethod

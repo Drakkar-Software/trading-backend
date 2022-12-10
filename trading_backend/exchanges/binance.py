@@ -19,7 +19,7 @@ import trading_backend.exchanges as exchanges
 
 
 class Binance(exchanges.Exchange):
-    SPOT_ID = "T9698EB7"
+    SPOT_ID = "HR452G85"
     MARGIN_ID = None
     FUTURE_ID = "uquVg2pc"
     REF_ID = "135007948"

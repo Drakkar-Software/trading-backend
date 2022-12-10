@@ -18,4 +18,4 @@ pur
 
 pylint
 
-ccxt==1.95.36   # use to run test using a specific version of ccxt
+ccxt==2.2.84   # use to run test using a specific version of ccxt

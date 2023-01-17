@@ -17,22 +17,21 @@ import trading_backend.exchanges as exchanges
 
 
 class Bitget(exchanges.Exchange):
-    SPOT_ID = "Octobot" + "#"    # include # as it is required to generate client_oid
-    FUTURE_ID = "Octobot" + "#"    # include # as it is required to generate client_oid
+    SPOT_ID = "Octobot"      # include # as it is required to generate client_oid
+    FUTURE_ID = "Octobot"    # include # as it is required to generate client_oid
     IS_SPONSORING = True
 
     @classmethod
     def get_name(cls):
         return 'bitget'
 
+    def _generate_order_id(self):
+        return f"{self._get_id()}#{self._exchange.connector.client.uuid22()}"
+
     def get_orders_parameters(self, params=None) -> dict:
-        if "broker" not in self._exchange.connector.client.options:
-            self._exchange.connector.client.options["broker"] = {}
-        options_broker = self._exchange.connector.client.options["broker"]
-        # same broker id for everything
-        for broker_type in ("spot", "swap"):
-            if options_broker.get(broker_type, None) != self._get_id():
-                self._exchange.connector.client.options["broker"][broker_type] = self._get_id()
+        self._exchange.connector.client.options["broker"] = self._get_id()
+        params = super().get_orders_parameters(params)
+        params["clientOrderId"] = self._generate_order_id()
         return super().get_orders_parameters(params)
 
     async def _inner_is_valid_account(self) -> (bool, str):

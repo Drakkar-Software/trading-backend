@@ -30,6 +30,9 @@ class Exchange:
         # add backend headers
         self._exchange.connector.add_headers(self.get_headers())
 
+    def stop(self):
+        self._exchange = None
+
     @classmethod
     def get_name(cls):
         return 'default'

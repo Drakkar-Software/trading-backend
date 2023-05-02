@@ -13,5 +13,5 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-VERSION = "1.2.0"
+VERSION = "1.2.1"
 PROJECT_NAME = "trading-backend"

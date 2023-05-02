@@ -21,7 +21,6 @@ from trading_backend import PROJECT_NAME, VERSION
 
 PACKAGES = find_packages(exclude=["tests"])
 
-packages_list = []
 
 # long description from README file
 with open('README.md', encoding='utf-8') as f:
@@ -36,7 +35,7 @@ setup(
     url='https://github.com/Drakkar-Software/trading-backend',
     license='LGPL-3.0',
     author='Drakkar-Software',
-    author_email='drakkar-software@protonmail.com',
+    author_email='contact@drakkar.software',
     description='Trading tools',
     packages=PACKAGES,
     include_package_data=True,

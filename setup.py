@@ -17,7 +17,8 @@
 from setuptools import find_packages
 from setuptools import setup
 
-from trading_backend import PROJECT_NAME, VERSION
+VERSION = "1.2.3"
+PROJECT_NAME = "trading-backend"
 
 PACKAGES = find_packages(exclude=["tests"])
 
@@ -44,7 +45,6 @@ setup(
     test_suite="tests",
     zip_safe=False,
     data_files=[],
-    setup_requires=REQUIRED,
     install_requires=REQUIRED,
     python_requires=REQUIRES_PYTHON,
     classifiers=[

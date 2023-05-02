@@ -17,7 +17,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-from trading_backend import PROJECT_NAME, VERSION
+from trading_backend.constants import PROJECT_NAME, VERSION
 
 PACKAGES = find_packages(exclude=["tests"])
 

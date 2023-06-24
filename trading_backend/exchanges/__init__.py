@@ -63,6 +63,16 @@ from trading_backend.exchanges.phemex import (
     Phemex
 )
 
+from trading_backend.exchanges import kucoin
+from trading_backend.exchanges.kucoin import (
+    Kucoin
+)
+
+from trading_backend.exchanges import kucoinfutures
+from trading_backend.exchanges.kucoinfutures import (
+    KucoinFutures
+)
+
 __all__ = [
     "Exchange",
     "Binance",
@@ -74,4 +84,6 @@ __all__ = [
     "HuobiPro",
     "Bitget",
     "Phemex",
+    "Kucoin",
+    "KucoinFutures",
 ]

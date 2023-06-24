@@ -13,23 +13,11 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import mock
-import pytest
-import ccxt.async_support
 import trading_backend.exchanges as exchanges
-import tests.util.create_order_tests as create_order_tests
-from tests import bitget_exchange
 
 
-def test_get_name(bitget_exchange):
-    assert exchanges.Bitget(bitget_exchange).get_name() == ccxt.async_support.bitget().id.lower()
+class KucoinFutures(exchanges.Kucoin):
 
-
-@pytest.mark.asyncio
-async def test_get_orders_parameters(bitget_exchange):
-    exchange = exchanges.Bitget(bitget_exchange)
-    await create_order_tests.create_order_mocked_test_args(
-        exchange,
-        exchange_private_post_order_method_name="privateSpotPostTradeOrders",
-        exchange_request_referral_key="clientOrderId",
-        should_contains=True)
+    @classmethod
+    def get_name(cls):
+        return 'kucoinfutures'

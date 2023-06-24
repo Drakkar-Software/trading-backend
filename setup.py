@@ -17,7 +17,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-VERSION = "1.2.3"
+VERSION = "1.2.4"
 PROJECT_NAME = "trading-backend"
 
 PACKAGES = find_packages(exclude=["tests"])

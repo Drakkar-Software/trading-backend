@@ -53,6 +53,11 @@ def bybit_exchange():
 
 
 @pytest.fixture
+def cryptocom_exchange():
+    return ExchangeWrapper(ccxt.async_support.cryptocom())
+
+
+@pytest.fixture
 def gateio_exchange():
     return ExchangeWrapper(ccxt.async_support.gateio())
 

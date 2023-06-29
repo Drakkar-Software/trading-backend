@@ -33,6 +33,11 @@ from trading_backend.exchanges.bybit import (
     Bybit
 )
 
+from trading_backend.exchanges import cryptocom
+from trading_backend.exchanges.cryptocom import (
+    CryptoCom
+)
+
 from trading_backend.exchanges import ascendex
 from trading_backend.exchanges.ascendex import (
     Ascendex
@@ -77,6 +82,7 @@ __all__ = [
     "Exchange",
     "Binance",
     "Bybit",
+    "CryptoCom",
     "OKX",
     "Ascendex",
     "GateIO",

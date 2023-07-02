@@ -13,7 +13,6 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import mock
 import pytest
 import ccxt.async_support
 import trading_backend.exchanges as exchanges

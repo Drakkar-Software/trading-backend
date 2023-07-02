@@ -19,7 +19,7 @@ import ccxt.async_support
 
 @pytest.fixture
 def binance_exchange():
-    return ExchangeWrapper(ccxt.async_support.binance())
+    return ExchangeWrapper(ccxt.async_support.binanceus())  # binanceus not to fail on CI
 
 
 @pytest.fixture

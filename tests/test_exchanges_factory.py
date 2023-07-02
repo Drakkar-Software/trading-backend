@@ -43,7 +43,7 @@ def test_create_exchange_backend(
         pass
 
     exchanges_dict = {
-        "binance": BinanceMock,
+        "binanceus": BinanceMock,
         "bybit": BybitMock,
         "kucoin": KucoinMock,
         "kucoinfutures": KucoinFuturesMock,

@@ -13,24 +13,24 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import pytest
-import ccxt.async_support
 import trading_backend.exchanges as exchanges
-import tests.util.create_order_tests as create_order_tests
-from tests import kucoinfutures_exchange
 
 
-def test_get_name(kucoinfutures_exchange):
-    assert exchanges.KucoinFutures(kucoinfutures_exchange).get_name() == ccxt.async_support.kucoinfutures().id.lower()
+class MEXC(exchanges.Exchange):
+    SPOT_ID = "OCTO"
+    MARGIN_ID = "OCTO"
+    FUTURE_ID = "OCTO"
+    IS_SPONSORING = True
 
+    @classmethod
+    def get_name(cls):
+        return 'mexc'
 
-@pytest.mark.asyncio
-async def test_broker_id(kucoinfutures_exchange):
-    exchange = exchanges.KucoinFutures(kucoinfutures_exchange)
-    exchange._exchange.exchange_manager.is_future = True
-    await create_order_tests.sign_test(
-        exchange,
-        "futuresPrivate",
-        "KC-API-PARTNER",
-        broker_sign_header_key="KC-API-PARTNER-SIGN",
-    )
+    def get_orders_parameters(self, params=None) -> dict:
+        if self._exchange.connector.client.options.get("broker", "") != self._get_id():
+            self._exchange.connector.client.options["broker"] = self._get_id()
+        return super().get_orders_parameters(params)
+
+    async def _inner_is_valid_account(self) -> (bool, str):
+        # Nothing to do
+        return await super()._inner_is_valid_account()

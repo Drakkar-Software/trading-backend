@@ -32,5 +32,5 @@ async def test_broker_id(kucoin_exchange):
         exchange,
         "private",
         "KC-API-PARTNER",
-        "KC-API-PARTNER-SIGN",
+        broker_sign_header_key="KC-API-PARTNER-SIGN",
     )

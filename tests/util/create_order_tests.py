@@ -57,9 +57,9 @@ async def create_order_mocked_test_args(
 
 async def sign_test(
     exchange: exchanges.Exchange,
-    api: str,
+    api,
     broker_id_header_key: str,
-    broker_sign_header_key: str,
+    broker_sign_header_key: str = None,
 ):
     url_path = "url/path"
     method = "POST"
@@ -81,7 +81,8 @@ async def sign_test(
     assert signed_result
     headers = signed_result["headers"]
     assert headers[broker_id_header_key] != exchange._get_id()
-    assert headers[broker_sign_header_key]
+    if broker_sign_header_key:
+        assert headers[broker_sign_header_key]
 
     # with referral patch
     exchange.get_orders_parameters()
@@ -91,7 +92,8 @@ async def sign_test(
     assert signed_result
     headers = signed_result["headers"]
     assert headers[broker_id_header_key] == exchange._get_id()
-    assert headers[broker_sign_header_key]
+    if broker_sign_header_key:
+        assert headers[broker_sign_header_key]
 
 
 async def exchange_requests_contains_headers_test(exchange: exchanges.Exchange,

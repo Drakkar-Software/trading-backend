@@ -88,6 +88,11 @@ def kucoinfutures_exchange():
 
 
 @pytest.fixture
+def mexc_exchange():
+    return ExchangeWrapper(ccxt.async_support.mexc())
+
+
+@pytest.fixture
 def default_exchange():
     """
     :return: An exchange for which there is no exchange implementation in trading_backend.exchanges

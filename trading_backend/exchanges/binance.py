@@ -70,9 +70,9 @@ class Binance(exchanges.Exchange):
 
     async def _get_account_referral_details(self) -> dict:
         return await self._exchange.connector.client.sapi_get_apireferral_ifnewuser(
-            params=self._exchange._get_params({
+            params={
                 "apiAgentCode": self._get_id()
-            })
+            }
         )
 
     async def _inner_is_valid_account(self) -> (bool, str):

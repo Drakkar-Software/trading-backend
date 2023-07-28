@@ -119,6 +119,3 @@ class ExchangeWrapper:
     def __init__(self, ccxt_exchange, is_margin=False, is_future=False):
         self.connector = ExchangeConnector(ccxt_exchange)
         self.exchange_manager = ExchangeManager(is_margin=is_margin, is_future=is_future)
-
-    def _get_params(self, params):
-        return params

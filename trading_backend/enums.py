@@ -13,19 +13,12 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
-import trading_backend.exchanges as exchanges
+import enum
 
 
-class GateIO(exchanges.Exchange):
-    SPOT_ID = "Octobot"
-    MARGIN_ID = "Octobot"
-    FUTURE_ID = "Octobot"
-    IS_SPONSORING = True
-    HEADER_KEY = "X-Gate-Channel-Id"
-
-    @classmethod
-    def get_name(cls):
-        return 'gateio'
-
-    def get_headers(self):
-        return {self.HEADER_KEY: self._get_id()}
+class APIKeyRights(enum.Enum):
+    READING = "reading"
+    SPOT_TRADING = "spot trading"
+    MARGIN_TRADING = "margin trading"
+    FUTURES_TRADING = "futures trading"
+    WITHDRAWALS = "withdrawals"

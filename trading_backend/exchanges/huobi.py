@@ -33,7 +33,3 @@ class Huobi(exchanges.Exchange):
         if options_broker.get("id", None) != self._get_id():
             self._exchange.connector.client.options["broker"]["id"] = self._get_id()
         return super().get_orders_parameters(params)
-
-    async def _inner_is_valid_account(self) -> (bool, str):
-        # TODO When beta broker program is over: add a check with the proper API
-        return await super()._inner_is_valid_account()

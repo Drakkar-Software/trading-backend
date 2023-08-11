@@ -45,7 +45,3 @@ class Kucoin(exchanges.Exchange):
         if self._exchange.connector.client.options.get("partner") != self._get_partner_details():
             self._exchange.connector.client.options["partner"] = self._get_partner_details()
         return super().get_orders_parameters(params)
-
-    async def _inner_is_valid_account(self) -> (bool, str):
-        # Nothing to do
-        return await super()._inner_is_valid_account()

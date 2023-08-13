@@ -84,6 +84,26 @@ async def test_is_valid_account(binance_exchange):
                 _get_api_key_rights_mock.assert_called_once()
 
     with mock.patch.object(
+            exchange, "_get_api_key_rights", mock.AsyncMock(return_value=[
+                trading_backend.enums.APIKeyRights.SPOT_TRADING, trading_backend.enums.APIKeyRights.WITHDRAWALS
+            ])
+    ) as _get_api_key_rights_mock:
+        with mock.patch.object(exchange._exchange.connector.client, "sapi_get_apireferral_ifnewuser",
+                               mock.AsyncMock(return_value={"rebateWorking": True, "ifNewUser": True})) \
+                as sapi_get_apireferral_ifnewuser_mock:
+            with mock.patch.object(exchange, "_allow_withdrawal_right", mock.Mock(return_value=True)) as \
+                 _allow_withdrawal_right_mock:
+                assert (await exchange.is_valid_account()) == (True, None)
+                sapi_get_apireferral_ifnewuser_mock.assert_called_once_with(params=params)
+                _get_api_key_rights_mock.assert_called_once()
+                _allow_withdrawal_right_mock.assert_called_once()
+            with mock.patch.object(exchange, "_allow_withdrawal_right", mock.Mock(return_value=False)) as \
+                 _allow_withdrawal_right_mock:
+                with pytest.raises(trading_backend.errors.APIKeyPermissionsError):
+                    assert (await exchange.is_valid_account()) == (True, None)
+                _allow_withdrawal_right_mock.assert_called_once()
+
+    with mock.patch.object(
             exchange, "_get_api_key_rights", mock.AsyncMock(return_value=[trading_backend.enums.APIKeyRights.SPOT_TRADING])
     ) as _get_api_key_rights_mock:
         with mock.patch.object(exchange._exchange.connector.client, "sapi_get_apireferral_ifnewuser",

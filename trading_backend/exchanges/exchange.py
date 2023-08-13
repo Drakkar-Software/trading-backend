@@ -17,6 +17,7 @@ import ccxt
 
 import trading_backend.errors
 import trading_backend.enums
+import trading_backend.constants
 
 
 class Exchange:
@@ -57,6 +58,9 @@ class Exchange:
             params = {}
         return params
 
+    def _allow_withdrawal_right(self) -> bool:
+        return trading_backend.constants.ALLOW_WITHDRAWAL_KEYS
+
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
         # default implementation: fetch portfolio and don't check
         # todo implementation for each exchange as long as ccxt does not support it in unified api
@@ -79,6 +83,10 @@ class Exchange:
         if required_right not in rights:
             raise trading_backend.errors.APIKeyPermissionsError(
                 f"{required_right.value} permission is required"
+            )
+        if not self._allow_withdrawal_right() and trading_backend.enums.APIKeyRights.WITHDRAWALS in rights:
+            raise trading_backend.errors.APIKeyPermissionsError(
+                f"This api key has withdrawal rights, please revoke it."
             )
 
     async def is_valid_account(self, always_check_key_rights=False) -> (bool, str):

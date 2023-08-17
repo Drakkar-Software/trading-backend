@@ -17,9 +17,9 @@ import trading_backend.exchanges as exchanges
 
 
 class CryptoCom(exchanges.Exchange):
-    SPOT_ID = "OCTBT_"
-    MARGIN_ID = "OCTBT_"
-    FUTURE_ID = "OCTBT_"
+    SPOT_ID = "OCTBT"
+    MARGIN_ID = "OCTBT"
+    FUTURE_ID = "OCTBT"
     IS_SPONSORING = True
     HEADER_SPOT_KEY = "agentSource"
     HEADER_FUTURE_KEY = "Referer"

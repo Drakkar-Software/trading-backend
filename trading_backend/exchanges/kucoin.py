@@ -13,7 +13,10 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import ccxt
+
 import trading_backend.exchanges as exchanges
+import trading_backend.enums
 
 
 class Kucoin(exchanges.Exchange):
@@ -28,6 +31,28 @@ class Kucoin(exchanges.Exchange):
     @classmethod
     def get_name(cls):
         return 'kucoin'
+
+    async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
+        # It is currently impossible to fetch api key permissions: try to cancel an imaginary order,
+        # if a permission error is raised instead of a cancel fail, then trading permissions are missing.
+        # updated: 23/08/2023
+        rights = [trading_backend.enums.APIKeyRights.READING]
+        try:
+            # use client api to avoid any ccxt call wrapping and error handling
+            await self._exchange.connector.client.cancel_order("12345", symbol="BTC/USDT")
+        except ccxt.AuthenticationError as err:
+            if "permission" in str(err):
+                # does not have trading permission
+                pass
+            else:
+                # another error
+                raise
+        except ccxt.ExchangeError:
+            # has trading permission
+            rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
+            rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
+            rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
+        return rights
 
     def _get_partner_details(self):
         return {

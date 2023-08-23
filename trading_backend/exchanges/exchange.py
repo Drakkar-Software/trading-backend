@@ -74,7 +74,20 @@ class Exchange:
 
     async def _ensure_api_key_rights(self):
         # raise trading_backend.errors.APIKeyPermissionsError on missing permissions
-        rights = await self._get_api_key_rights()
+        rights = []
+        try:
+            rights = await self._get_api_key_rights()
+        except ccxt.BaseError:
+            raise
+        except Exception as err:
+            try:
+                import octobot_commons.logging as logging
+                logging.get_logger(self.__class__.__name__).exception(
+                    err, True, f"Error when getting {self.__class__.__name__} api key rights: {err}"
+                )
+            except ImportError:
+                pass
+            # non ccxt error: proceed to right checks and raise
         required_right = trading_backend.enums.APIKeyRights.SPOT_TRADING
         if self._exchange.exchange_manager.is_future:
             required_right = trading_backend.enums.APIKeyRights.FUTURES_TRADING

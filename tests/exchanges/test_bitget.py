@@ -29,6 +29,16 @@ async def test_get_orders_parameters(bitget_exchange):
     exchange = exchanges.Bitget(bitget_exchange)
     await create_order_tests.create_order_mocked_test_args(
         exchange,
-        exchange_private_post_order_method_name="privateSpotPostTradeOrders",
+        exchange_private_post_order_method_name="privateSpotPostSpotV1TradeOrders",
         exchange_request_referral_key="clientOrderId",
         should_contains=True)
+
+
+@pytest.mark.asyncio
+async def test_sign(bitget_exchange):
+    exchange = exchanges.Bitget(bitget_exchange)
+    await create_order_tests.sign_test(
+        exchange,
+        ["private", "spot"],
+        "X-CHANNEL-API-CODE",
+    )

@@ -33,16 +33,6 @@ def huobi_exchange():
 
 
 @pytest.fixture
-def huobipro_exchange():
-    return ExchangeWrapper(ccxt.async_support.huobipro())
-
-
-@pytest.fixture
-def ftx_exchange():
-    return ExchangeWrapper(ccxt.async_support.ftx())
-
-
-@pytest.fixture
 def ascendex_exchange():
     return ExchangeWrapper(ccxt.async_support.ascendex())
 
@@ -97,7 +87,7 @@ def default_exchange():
     """
     :return: An exchange for which there is no exchange implementation in trading_backend.exchanges
     """
-    return ExchangeWrapper(ccxt.async_support.okex())
+    return ExchangeWrapper(ccxt.async_support.okx())
 
 
 class ExchangeConnector:

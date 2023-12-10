@@ -83,6 +83,11 @@ def mexc_exchange():
 
 
 @pytest.fixture
+def bingx_exchange():
+    return ExchangeWrapper(ccxt.async_support.bingx())
+
+
+@pytest.fixture
 def default_exchange():
     """
     :return: An exchange for which there is no exchange implementation in trading_backend.exchanges

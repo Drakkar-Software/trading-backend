@@ -60,6 +60,7 @@ async def sign_test(
     api,
     broker_id_header_key: str,
     broker_sign_header_key: str = None,
+    section: str = None,
 ):
     url_path = "url/path"
     method = "POST"
@@ -75,9 +76,14 @@ async def sign_test(
     ccxt_client.password = password
 
     # without referral patch
-    signed_result = ccxt_client.sign(
-        url_path, api=api, method=method, params=params, headers=headers, body=body
-    )
+    if section:
+        signed_result = ccxt_client.sign(
+            url_path, section=section, method=method, params=params, headers=headers, body=body
+        )
+    else:
+        signed_result = ccxt_client.sign(
+            url_path, api=api, method=method, params=params, headers=headers, body=body
+        )
     assert signed_result
     headers = signed_result["headers"]
     assert headers[broker_id_header_key] != exchange._get_id()
@@ -86,9 +92,14 @@ async def sign_test(
 
     # with referral patch
     exchange.get_orders_parameters()
-    signed_result = ccxt_client.sign(
-        url_path, api=api, method=method, params=params, headers=headers, body=body
-    )
+    if section:
+        signed_result = ccxt_client.sign(
+            url_path, section=section, method=method, params=params, headers=headers, body=body
+        )
+    else:
+        signed_result = ccxt_client.sign(
+            url_path, api=api, method=method, params=params, headers=headers, body=body
+        )
     assert signed_result
     headers = signed_result["headers"]
     assert headers[broker_id_header_key] == exchange._get_id()

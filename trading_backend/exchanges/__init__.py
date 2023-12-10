@@ -78,6 +78,11 @@ from trading_backend.exchanges.mexc import (
     MEXC
 )
 
+from trading_backend.exchanges import bingx
+from trading_backend.exchanges.bingx import (
+    Bingx
+)
+
 __all__ = [
     "Exchange",
     "Binance",
@@ -92,4 +97,5 @@ __all__ = [
     "Kucoin",
     "KucoinFutures",
     "MEXC",
+    "Bingx",
 ]

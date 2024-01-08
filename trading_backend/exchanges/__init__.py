@@ -48,6 +48,11 @@ from trading_backend.exchanges.gateio import (
     GateIO
 )
 
+from trading_backend.exchanges import htx
+from trading_backend.exchanges.htx import (
+    HTX
+)
+
 from trading_backend.exchanges import huobi
 from trading_backend.exchanges.huobi import (
     Huobi
@@ -91,6 +96,7 @@ __all__ = [
     "OKX",
     "Ascendex",
     "GateIO",
+    "HTX",
     "Huobi",
     "Bitget",
     "Phemex",

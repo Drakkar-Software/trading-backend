@@ -33,6 +33,11 @@ def huobi_exchange():
 
 
 @pytest.fixture
+def htx_exchange():
+    return ExchangeWrapper(ccxt.async_support.htx())
+
+
+@pytest.fixture
 def ascendex_exchange():
     return ExchangeWrapper(ccxt.async_support.ascendex())
 

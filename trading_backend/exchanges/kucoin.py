@@ -35,13 +35,13 @@ class Kucoin(exchanges.Exchange):
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
         # It is currently impossible to fetch api key permissions: try to cancel an imaginary order,
         # if a permission error is raised instead of a cancel fail, then trading permissions are missing.
-        # updated: 23/08/2023
+        # updated: 24/01/2024
         rights = [trading_backend.enums.APIKeyRights.READING]
         try:
             # use client api to avoid any ccxt call wrapping and error handling
             await self._exchange.connector.client.cancel_order("12345", symbol="BTC/USDT")
         except ccxt.AuthenticationError as err:
-            if "permission" in str(err):
+            if "permission" in str(err).lower():
                 # does not have trading permission
                 pass
             else:

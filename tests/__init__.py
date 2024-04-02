@@ -23,6 +23,16 @@ def binance_exchange():
 
 
 @pytest.fixture
+def binanceus_exchange():
+    return ExchangeWrapper(ccxt.async_support.binanceus())  # binanceus not to fail on CI
+
+
+@pytest.fixture
+def coinbase_exchange():
+    return ExchangeWrapper(ccxt.async_support.coinbase())
+
+
+@pytest.fixture
 def okx_exchange():
     return ExchangeWrapper(ccxt.async_support.okx())
 

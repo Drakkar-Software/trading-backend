@@ -33,17 +33,23 @@ class BinanceUS(exchanges.Exchange):
         return f"Broker rebate is not enabled (missing broker id)."
 
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
-        restrictions = await self._exchange.connector.client.sapi_get_account_apirestrictions()
-        rights = []
-        if restrictions.get('enableReading'):
-            rights.append(trading_backend.enums.APIKeyRights.READING)
-        if restrictions.get('enableSpotAndMarginTrading'):
-            rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
-            rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
-            rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
-        if restrictions.get('enableWithdrawals'):
-            rights.append(trading_backend.enums.APIKeyRights.WITHDRAWALS)
-        return rights
+        # Binance.us specific:
+        # It is currently impossible to fetch api key permissions: try to cancel an imaginary order,
+        # if a permission error is raised instead of a cancel fail, then trading permissions are missing.
+        # updated: 14/04/2024
+        return await self._get_api_key_rights_using_order()
+        # raising 404 error
+        # restrictions = await self._exchange.connector.client.sapi_get_account_apirestrictions()
+        # rights = []
+        # if restrictions.get('enableReading'):
+        #     rights.append(trading_backend.enums.APIKeyRights.READING)
+        # if restrictions.get('enableSpotAndMarginTrading'):
+        #     rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
+        #     rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
+        #     rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
+        # if restrictions.get('enableWithdrawals'):
+        #     rights.append(trading_backend.enums.APIKeyRights.WITHDRAWALS)
+        # return rights
 
     async def _inner_is_valid_account(self) -> (bool, str):
         return False, await self._ensure_broker_status()

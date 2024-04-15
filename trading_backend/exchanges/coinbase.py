@@ -33,38 +33,75 @@ class Coinbase(exchanges.Exchange):
     async def _ensure_broker_status(self):
         return f"Broker rebate is not enabled (missing broker id)."
 
+    def _get_legacy_api_permissions(self, scopes):
+        rights = []
+        read_scopes = [
+            "wallet:accounts:read",
+            "wallet:buys:read",
+            "wallet:sells:read",
+            "wallet:orders:read",
+            "wallet:trades:read",
+            "wallet:user:read",
+            "wallet:transactions:read",
+        ]
+        trade_scopes = [
+            "wallet:buys:create",
+            "wallet:sells:create",
+        ]
+        withdraw_scopes = [
+            "wallet:withdrawals:create"
+        ]
+        if all(scope in scopes for scope in read_scopes):
+            rights.append(trading_backend.enums.APIKeyRights.READING)
+        if all(scope in scopes for scope in trade_scopes):
+            rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
+            rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
+            rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
+        if any(scope in scopes for scope in withdraw_scopes):
+            rights.append(trading_backend.enums.APIKeyRights.WITHDRAWALS)
+        return rights
+
+    def _get_api_permissions(self, scopes):
+        rights = []
+        read_scopes = [
+            "rat#view",
+        ]
+        trade_scopes = [
+            "rat#trade",
+        ]
+        withdraw_scopes = [
+            "rat#transfer"
+        ]
+        if all(scope in scopes for scope in read_scopes):
+            rights.append(trading_backend.enums.APIKeyRights.READING)
+        if all(scope in scopes for scope in trade_scopes):
+            rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
+            rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
+            rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
+        if any(scope in scopes for scope in withdraw_scopes):
+            rights.append(trading_backend.enums.APIKeyRights.WITHDRAWALS)
+        return rights
+
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
         # warning might become deprecated
         # https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-users
         try:
             restrictions = (await self._exchange.connector.client.v2PrivateGetUserAuth())["data"]
-            rights = []
             scopes = restrictions["scopes"]
-            read_scopes = [
-                "wallet:accounts:read",
-                "wallet:buys:read",
-                "wallet:sells:read",
-                "wallet:orders:read",
-                "wallet:trades:read",
-                "wallet:user:read",
-                "wallet:transactions:read",
-            ]
-            trade_scopes = [
-                "wallet:buys:create",
-                "wallet:sells:create",
-            ]
-            withdraw_scopes = [
-                "wallet:withdrawals:create"
-            ]
-            if all(scope in scopes for scope in read_scopes):
-                rights.append(trading_backend.enums.APIKeyRights.READING)
-            if all(scope in scopes for scope in trade_scopes):
-                rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
-                rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
-                rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
-            if any(scope in scopes for scope in withdraw_scopes):
-                rights.append(trading_backend.enums.APIKeyRights.WITHDRAWALS)
-            return rights
+            if rights := self._get_api_permissions(scopes):
+                return rights
+            # legacy api keys
+            if rights := self._get_legacy_api_permissions(scopes):
+                return rights
+            # should not happen unless coinbase changes its api again
+            self._exchange.logger.error(
+                f"Can't fetch {self.get_name()} api key permissions from scopes: {scopes}. "
+                f"Using default order creation check instead"
+            )
+            # last change: try creating an order
+            return await self._get_api_key_rights_using_order()
+        except ccxt.AuthenticationError:
+            raise
         except ccxt.BaseError as err:
             self._exchange.logger.exception(
                 err, True,

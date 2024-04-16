@@ -103,7 +103,7 @@ class Coinbase(exchanges.Exchange):
             return await self._get_api_key_rights_using_order()
         except ccxt.AuthenticationError:
             raise
-        except binascii.Error as err:
+        except (binascii.Error, AssertionError, IndexError) as err:
             raise ccxt.AuthenticationError(f"Invalid key format ({err})")
         except ccxt.BaseError as err:
             self._exchange.logger.exception(

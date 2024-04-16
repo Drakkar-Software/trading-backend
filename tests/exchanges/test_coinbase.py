@@ -39,8 +39,71 @@ async def test_inner_is_valid_account(coinbase_exchange):
 
 
 @pytest.mark.asyncio
+async def test_invalid_api_key_get_api_key_rights(coinbase_exchange):
+    # API keys used as a base for these tests are deleted from Coinbase
+    exchange = exchanges.Coinbase(coinbase_exchange)
+    with pytest.raises(ccxt.AuthenticationError):
+        assert await exchange._get_api_key_rights()
+    with pytest.raises(ccxt.AuthenticationError):
+        # binascii.Error turned into ccxt.AuthenticationError
+        exchange._exchange.connector.client.apiKey = "organizations/1e7665a0-440b-495f-8a49-5365841e196e/apiKeys/b43c5889-a3b5-4ab5-a606-578b4d74f3db"
+        exchange._exchange.connector.client.secret = "AwEHoUQDQgAErQXGFQUMqPT5fQUVcCchCaomapu0y952"
+        assert await exchange._get_api_key_rights()
+    with pytest.raises(ccxt.AuthenticationError):
+        # AssertionError turned into ccxt.AuthenticationError
+        exchange._exchange.connector.client.apiKey = "organizations/1e7665a0-440b-495f-8a49-5365841e196e/apiKeys/b43c5889-a3b5-4ab5-a606-578b4d74f3db"
+        exchange._exchange.connector.client.secret = "dd"
+        assert await exchange._get_api_key_rights()
+    with pytest.raises(ccxt.AuthenticationError):
+        # IndexError turned into ccxt.AuthenticationError
+        exchange._exchange.connector.client.apiKey = "organizations/1e7665a0-440b-495f-8a49-5365841e196e/apiKeys/b43c5889-a3b5-4ab5-a606-578b4d74f3db"
+        exchange._exchange.connector.client.secret = "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEINpzmww4rUF+EeSMDnBqd3oXTxm2Q76MUwwsLw8Vjo+poAoGCCqGSM49\nBk6cNPNp4fH0NwneES1HNpJ0aEx+VYRhcg=="
+        assert await exchange._get_api_key_rights()
+    with pytest.raises(ccxt.AuthenticationError):
+        # binascii.Error turned into ccxt.AuthenticationError
+        exchange._exchange.connector.client.apiKey = "-495f-8a49-5365841e196e/apiKeys/b43c5889-a3b5-4ab5-a606-578b4d74f3db"
+        exchange._exchange.connector.client.secret = "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIK/XmQtNSTD2pqrhyZFvBuExnlyLOPcDzT+fsm1sq3ZCoAoGCCqGSM49\nAwEHoUQDQgAErQXGFQUMqPT5fQUVcCchCaomapu0y952+XgveL2QjgghGCeFbLfR\nTSg2RgUUtGbG3TIBEomwzbRAOEeYdjK06w"
+        assert await exchange._get_api_key_rights()
+    with pytest.raises(ccxt.AuthenticationError):
+        # binascii.Error turned into ccxt.AuthenticationError
+        exchange._exchange.connector.client.apiKey = "b43c5889-a3b5-4ab5-a606-578b4d74f3db"
+        exchange._exchange.connector.client.secret = "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIK/XmQtNSTD2pqrhyZFvBuExnlyLOPcDzT+fsm1sq3ZCoAoGCCqGSM49\nAwEHoUQDQgAErQXGFQUMqPT5fQUVcCchCaomapu0y952+XgveL2QjgghGCeFbLfR\nTSg2RgUUtGbG3TIBEomwzbRAOEeYdjK06w"
+        assert await exchange._get_api_key_rights()
+
+
+@pytest.mark.asyncio
 async def test_get_api_key_rights(coinbase_exchange):
     exchange = exchanges.Coinbase(coinbase_exchange)
+    with mock.patch.object(
+        exchange._exchange.connector.client, "v2PrivateGetUserAuth",
+        mock.AsyncMock(return_value={"data": {"scopes": [
+            "rat#view",
+            "rat#trade",
+            "rat#transfer",
+        ]}})
+    ) as v2PrivateGetUserAuth_mock:
+        assert await exchange._get_api_key_rights() == [
+            trading_backend.enums.APIKeyRights.READING,
+            trading_backend.enums.APIKeyRights.SPOT_TRADING,
+            trading_backend.enums.APIKeyRights.MARGIN_TRADING,
+            trading_backend.enums.APIKeyRights.FUTURES_TRADING,
+            trading_backend.enums.APIKeyRights.WITHDRAWALS,
+        ]
+        v2PrivateGetUserAuth_mock.assert_awaited_once()
+    with mock.patch.object(
+        exchange._exchange.connector.client, "v2PrivateGetUserAuth",
+        mock.AsyncMock(return_value={"data": {"scopes": [
+            "rat#view",
+            "rat#trade",
+        ]}})
+    ) as v2PrivateGetUserAuth_mock:
+        assert await exchange._get_api_key_rights() == [
+            trading_backend.enums.APIKeyRights.READING,
+            trading_backend.enums.APIKeyRights.SPOT_TRADING,
+            trading_backend.enums.APIKeyRights.MARGIN_TRADING,
+            trading_backend.enums.APIKeyRights.FUTURES_TRADING,
+        ]
+        v2PrivateGetUserAuth_mock.assert_awaited_once()
     with mock.patch.object(
         exchange._exchange.connector.client, "v2PrivateGetUserAuth",
         mock.AsyncMock(return_value={"data": {"scopes": [

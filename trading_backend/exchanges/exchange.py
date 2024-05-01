@@ -61,11 +61,14 @@ class Exchange:
     def _allow_withdrawal_right(self) -> bool:
         return trading_backend.constants.ALLOW_WITHDRAWAL_KEYS
 
+    async def _inner_cancel_order(self):
+        # use client api to avoid any ccxt call wrapping and error handling
+        await self._exchange.connector.client.cancel_order("12345", symbol="BTC/USDT")
+
     async def _get_api_key_rights_using_order(self) -> list[trading_backend.enums.APIKeyRights]:
         rights = [trading_backend.enums.APIKeyRights.READING]
         try:
-            # use client api to avoid any ccxt call wrapping and error handling
-            await self._exchange.connector.client.cancel_order("12345", symbol="BTC/USDT")
+            await self._inner_cancel_order()
         except ccxt.AuthenticationError as err:
             if "permission" in str(err).lower():
                 # does not have trading permission

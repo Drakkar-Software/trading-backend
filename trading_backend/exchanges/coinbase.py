@@ -83,10 +83,20 @@ class Coinbase(exchanges.Exchange):
             rights.append(trading_backend.enums.APIKeyRights.WITHDRAWALS)
         return rights
 
+    async def _inner_cancel_order(self):
+        try:
+            await super()._inner_cancel_order()
+        except ccxt.ArgumentsRequired as err:
+            # raised on invalid api keys
+            raise ccxt.AuthenticationError(err) from err
+
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
         # warning might become deprecated
         # https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-users
         try:
+            return await self._get_api_key_rights_using_order()
+            # DEPRECATED:
+            # GET https://api.coinbase.com/v2/user/auth 410 Gone The path /v2/user/auth is deprecated and no longer exists.
             restrictions = (await self._exchange.connector.client.v2PrivateGetUserAuth())["data"]
             scopes = restrictions["scopes"]
             if rights := self._get_api_permissions(scopes):

@@ -18,6 +18,10 @@ import ccxt
 import trading_backend.errors
 import trading_backend.enums
 import trading_backend.constants
+try:
+    import octobot_trading.exchanges as trading_exchanges
+except ImportError:
+    trading_exchanges = None
 
 
 class Exchange:
@@ -76,11 +80,12 @@ class Exchange:
             else:
                 # another error
                 raise
-        except ccxt.ExchangeError:
-            # has trading permission
-            rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
-            rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
-            rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
+        except ccxt.ExchangeError as err:
+            if trading_exchanges and not trading_exchanges.is_api_permission_error(err):
+                # has trading permission
+                rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
+                rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
+                rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
         return rights
 
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:

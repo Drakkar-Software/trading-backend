@@ -75,6 +75,12 @@ async def test_invalid_api_key_get_api_key_rights(coinbase_exchange):
         exchange._exchange.connector.client.apiKey = "-----BEGIN EC PRIVATE KEY----b43c5889-a3b5-4ab5-a606-578b4d74f3db"
         exchange._exchange.connector.client.secret = "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIK/XmQtNSTD2pqrhyZFvBuExnlyLOPcDzT+fsm1sq3ZCoAoGCCqGSM49\nAwEHoUQDQgAErQXGFQUMqPT5fQUVcCchCaomapu0y952+XgveL2QjgghGCeFbLfR\nTSg2RgUUtGbG3TIBEomwzbRAOEeYdjK06w"
         assert await exchange._get_api_key_rights()
+    with pytest.raises(ccxt.AuthenticationError):
+        # added chars after private key
+        # ccxt.static_dependencies.ecdsa.der.UnexpectedDER turned into ccxt.AuthenticationError
+        exchange._exchange.connector.client.apiKey = "organizations/1e7665a0-440b-495f-8a49-5365841e196e/apiKeys/b43c5889-a3b5-4ab5-a606-578b4d74f3db"
+        exchange._exchange.connector.client.secret = "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIK/XmQtNSTD2pqrhyZFvBuExnlyLOPcDzT+fsm1sq3ZCoAoGCCqGSM49\nAwEHoUQDQgAErQXGFQUMqPT5fQUVcCchCaomapu0y952+XgveL2QjgghGCeFbLfR\nTSg2RgUUtGbG3TIBEomwzbRAOEeYdjK06w" + b'488347'.decode()
+        assert await exchange._get_api_key_rights()
 
 
 # @pytest.mark.asyncio

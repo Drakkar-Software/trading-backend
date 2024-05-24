@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import ccxt
+import ccxt.static_dependencies.ecdsa.der
 import binascii
 import trading_backend.exchanges as exchanges
 import trading_backend.enums
@@ -113,7 +114,10 @@ class Coinbase(exchanges.Exchange):
             return await self._get_api_key_rights_using_order()
         except ccxt.AuthenticationError:
             raise
-        except (binascii.Error, AssertionError, IndexError, ccxt.ArgumentsRequired) as err:
+        except (
+            binascii.Error, AssertionError, IndexError,
+            ccxt.ArgumentsRequired, ccxt.static_dependencies.ecdsa.der.UnexpectedDER
+        ) as err:
             raise ccxt.AuthenticationError(f"Invalid key format ({err})")
         except ccxt.BaseError as err:
             self._exchange.logger.exception(

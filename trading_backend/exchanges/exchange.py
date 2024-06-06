@@ -18,10 +18,6 @@ import ccxt
 import trading_backend.errors
 import trading_backend.enums
 import trading_backend.constants
-try:
-    import octobot_trading.exchanges as trading_exchanges
-except ImportError:
-    trading_exchanges = None
 
 
 class Exchange:
@@ -81,7 +77,7 @@ class Exchange:
                 # another error
                 raise
         except ccxt.ExchangeError as err:
-            if trading_exchanges and not trading_exchanges.is_api_permission_error(err):
+            if not self._exchange.is_api_permission_error(err):
                 # has trading permission
                 rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
                 rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)

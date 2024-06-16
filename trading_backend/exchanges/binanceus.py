@@ -13,6 +13,8 @@
 #
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
+import ccxt
+
 import trading_backend.exchanges as exchanges
 import trading_backend.enums
 
@@ -37,7 +39,10 @@ class BinanceUS(exchanges.Exchange):
         # It is currently impossible to fetch api key permissions: try to cancel an imaginary order,
         # if a permission error is raised instead of a cancel fail, then trading permissions are missing.
         # updated: 14/04/2024
-        return await self._get_api_key_rights_using_order()
+        try:
+            return await self._get_api_key_rights_using_order()
+        except ValueError as err:
+            raise ccxt.AuthenticationError(f"Invalid key format ({err})")
         # raising 404 error
         # restrictions = await self._exchange.connector.client.sapi_get_account_apirestrictions()
         # rights = []

@@ -14,11 +14,9 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import pytest
-import mock
 import ccxt.async_support
 import trading_backend.exchanges as exchanges
-import trading_backend.enums
-import trading_backend
+import tests.util.account_tests as account_tests
 from tests import binanceus_exchange
 
 
@@ -36,3 +34,9 @@ async def test_get_orders_parameters(binanceus_exchange):
 async def test_inner_is_valid_account(binanceus_exchange):
     exchange = exchanges.BinanceUS(binanceus_exchange)
     assert await exchange._inner_is_valid_account() == (False, await exchange._ensure_broker_status())
+
+
+@pytest.mark.asyncio
+async def test_invalid_api_key_get_api_key_rights(binanceus_exchange):
+    exchange = exchanges.BinanceUS(binanceus_exchange)
+    await account_tests.check_invalid_account_keys(exchange)

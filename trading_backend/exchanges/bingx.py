@@ -28,6 +28,17 @@ class Bingx(exchanges.Exchange):
     def get_name(cls):
         return 'bingx'
 
+    async def _inner_cancel_order(self):
+        # use client api to avoid any ccxt call wrapping and error handling
+        try:
+            await self._exchange.connector.client.cancel_order("12345", symbol="BTC/USDT")
+        except ccxt.ExchangeError as err:
+            # ('bingx {"code":100413,"msg":"Incorrect apiKey","timestamp":1718551786654}',)
+            if "Incorrect apiKey".lower() in str(err).lower():
+                # error is not caught by ccxt as such
+                raise ccxt.AuthenticationError(f"Invalid key format ({err})")
+            raise
+
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
         # It is currently impossible to fetch api key permissions: try to cancel an imaginary order,
         # if a permission error is raised instead of a cancel fail, then trading permissions are missing.

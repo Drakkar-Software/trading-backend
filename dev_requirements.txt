@@ -21,5 +21,7 @@ pylint
 ccxt==4.3.56   # use to run test using a specific version of ccxt
 
 # async http requests
-# avoid v3.10.0 as it is failing CI (<class 'RuntimeError'>: aiodns needs a SelectorEventLoop on Windows. See more: https://github.com/saghul/aiodns/issues/86)
-aiohttp==3.9.5
+aiohttp==3.10.4
+# updating to aiodns==3.2.0 is incompatible (and failing CI)
+# raises RuntimeError: aiodns needs a SelectorEventLoop on Windows. See more: https://github.com/saghul/aiodns/issues/86
+aiodns==3.1.1   # used by aiohttp

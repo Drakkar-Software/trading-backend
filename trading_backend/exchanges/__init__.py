@@ -103,6 +103,11 @@ from trading_backend.exchanges.coinex import (
     Coinex
 )
 
+from trading_backend.exchanges import bitmart
+from trading_backend.exchanges.bitmart import (
+    Bitmart
+)
+
 __all__ = [
     "Exchange",
     "Binance",
@@ -120,4 +125,5 @@ __all__ = [
     "MEXC",
     "Bingx",
     "Coinex",
+    "Bitmart",
 ]

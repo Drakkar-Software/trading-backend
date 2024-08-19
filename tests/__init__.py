@@ -109,6 +109,11 @@ def coinex_exchange():
 
 
 @pytest.fixture
+def bitmart_exchange():
+    return ExchangeWrapper(ccxt.async_support.bitmart())
+
+
+@pytest.fixture
 def default_exchange():
     """
     :return: An exchange for which there is no exchange implementation in trading_backend.exchanges

@@ -68,6 +68,11 @@ from trading_backend.exchanges.huobi import (
     Huobi
 )
 
+from trading_backend.exchanges import hollaex
+from trading_backend.exchanges.hollaex import (
+    HollaEx
+)
+
 from trading_backend.exchanges import bitget
 from trading_backend.exchanges.bitget import (
     Bitget

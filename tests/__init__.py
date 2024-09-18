@@ -69,8 +69,8 @@ def gateio_exchange():
 
 
 @pytest.fixture
-def bybit_exchange():
-    return ExchangeWrapper(ccxt.async_support.bybit())
+def hollaex_exchange():
+    return ExchangeWrapper(ccxt.async_support.hollaex())
 
 
 @pytest.fixture

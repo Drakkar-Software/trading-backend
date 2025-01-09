@@ -46,10 +46,11 @@ async def test_get_api_key_rights(binance_exchange):
     exchange = exchanges.Binance(binance_exchange)
     with mock.patch.object(
         exchange._exchange.connector.client, "sapi_get_account_apirestrictions",
-        mock.AsyncMock(return_value={"enableReading": True, "enableSpotAndMarginTrading": False, "enableWithdrawals": False})
+        mock.AsyncMock(return_value={"enableReading": True, "enableSpotAndMarginTrading": False, "enableFutures": True, "enableWithdrawals": False})
     ) as sapi_get_account_apirestrictions_mock:
         assert await exchange._get_api_key_rights() == [
-            trading_backend.enums.APIKeyRights.READING
+            trading_backend.enums.APIKeyRights.READING,
+            trading_backend.enums.APIKeyRights.FUTURES_TRADING,
         ]
         sapi_get_account_apirestrictions_mock.assert_awaited_once()
     with mock.patch.object(
@@ -60,7 +61,6 @@ async def test_get_api_key_rights(binance_exchange):
             trading_backend.enums.APIKeyRights.READING,
             trading_backend.enums.APIKeyRights.SPOT_TRADING,
             trading_backend.enums.APIKeyRights.MARGIN_TRADING,
-            trading_backend.enums.APIKeyRights.FUTURES_TRADING,
             trading_backend.enums.APIKeyRights.WITHDRAWALS
         ]
         sapi_get_account_apirestrictions_mock.assert_awaited_once()

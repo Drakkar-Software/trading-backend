@@ -97,6 +97,7 @@ class Binance(exchanges.Exchange):
         if restrictions.get('enableSpotAndMarginTrading'):
             rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
             rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
+        if restrictions.get('enableFutures'):
             rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
         if restrictions.get('enableWithdrawals'):
             rights.append(trading_backend.enums.APIKeyRights.WITHDRAWALS)

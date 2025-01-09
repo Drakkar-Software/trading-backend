@@ -61,9 +61,14 @@ class Exchange:
     def _allow_withdrawal_right(self) -> bool:
         return trading_backend.constants.ALLOW_WITHDRAWAL_KEYS
 
+    def _get_symbol(self):
+        if self._exchange.exchange_manager.is_future:
+            return "BTC/USDT:USDT"
+        return "BTC/USDT"
+
     async def _inner_cancel_order(self):
         # use client api to avoid any ccxt call wrapping and error handling
-        await self._exchange.connector.client.cancel_order("12345", symbol="BTC/USDT")
+        await self._exchange.connector.client.cancel_order("12345", symbol=self._get_symbol())
 
     async def _get_api_key_rights_using_order(self) -> list[trading_backend.enums.APIKeyRights]:
         rights = [trading_backend.enums.APIKeyRights.READING]

@@ -31,7 +31,7 @@ class Bingx(exchanges.Exchange):
     async def _inner_cancel_order(self):
         # use client api to avoid any ccxt call wrapping and error handling
         try:
-            await self._exchange.connector.client.cancel_order("12345", symbol="BTC/USDT")
+            await self._exchange.connector.client.cancel_order("12345", symbol=self._get_symbol())
         except ccxt.ExchangeError as err:
             # ('bingx {"code":100413,"msg":"Incorrect apiKey","timestamp":1718551786654}',)
             if "Incorrect apiKey".lower() in str(err).lower():

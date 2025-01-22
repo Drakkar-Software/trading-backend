@@ -153,6 +153,15 @@ class Exchange:
             raise trading_backend.errors.TimeSyncError(err)
         except ccxt.ExchangeError as err:
             raise trading_backend.errors.ExchangeAuthError(err)
+        except trading_backend.errors.InvalidIdError as err:
+            try:
+                import octobot_commons.logging as logging
+                logging.get_logger(self.__class__.__name__).error(
+                    f"{trading_backend.errors.InvalidIdError.__name__} when checking account validity: {err}"
+                )
+            except ImportError:
+                pass
+            raise trading_backend.errors.ExchangeAuthError(err)
 
     async def _inner_is_valid_account(self) -> (bool, str):
         # check account validity regarding exchange requirements, exchange specific

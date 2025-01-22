@@ -25,3 +25,7 @@ class ExchangeAuthError(RuntimeError):
 
 class APIKeyPermissionsError(RuntimeError):
     pass
+
+
+class InvalidIdError(RuntimeError):
+    pass

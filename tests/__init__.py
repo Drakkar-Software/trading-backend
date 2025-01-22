@@ -131,9 +131,10 @@ class ExchangeConnector:
 
 
 class ExchangeManager:
-    def __init__(self, is_margin=False, is_future=False):
+    def __init__(self, is_margin=False, is_future=False, is_sandboxed=False):
         self.is_future = is_future
         self.is_margin = is_margin
+        self.is_sandboxed = is_sandboxed
 
 
 class ExchangeWrapper:

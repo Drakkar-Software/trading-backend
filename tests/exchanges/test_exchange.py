@@ -53,6 +53,12 @@ async def test_is_valid_account(default_exchange):
         with pytest.raises(trading_backend.errors.TimeSyncError):
             assert await exchange.is_valid_account() == (True, None)
         fetch_balance_mock.assert_called_once()
+    with (mock.patch.object(exchange, "_inner_is_valid_account",
+                           mock.AsyncMock(side_effect=trading_backend.errors.InvalidIdError))
+          as _inner_is_valid_account_mock):
+        with pytest.raises(trading_backend.errors.ExchangeAuthError):
+            assert await exchange.is_valid_account() == (True, None)
+        _inner_is_valid_account_mock.assert_called_once()
 
 
 @pytest.mark.asyncio

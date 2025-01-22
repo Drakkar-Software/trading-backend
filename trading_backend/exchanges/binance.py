@@ -17,6 +17,7 @@ import ccxt
 import aiohttp.streams
 
 import trading_backend.exchanges as exchanges
+import trading_backend.errors
 import trading_backend.enums
 
 class Binance(exchanges.Exchange):
@@ -57,6 +58,9 @@ class Binance(exchanges.Exchange):
 
     async def _ensure_broker_status(self):
         try:
+            if self._exchange.exchange_manager.is_future:
+                # no way to check on futures accounts (raising AgentCode is not exist)
+                return f"Broker rebate can't be checked when trading futures."
             details = await self._get_account_referral_details()
             if not details.get("rebateWorking", False):
                 if (ref_id := details.get("referrerId", None)) and ref_id == self.LEGACY_REF_ID:
@@ -106,6 +110,9 @@ class Binance(exchanges.Exchange):
     async def _inner_is_valid_account(self) -> (bool, str):
         details = None
         try:
+            if self._exchange.exchange_manager.is_future and not self._exchange.exchange_manager.is_sandboxed:
+                # no way to check on futures accounts (raising AgentCode is not exist)
+                return True, None
             details = await self._get_account_referral_details()
             if not details.get("rebateWorking", False):
                 ref_id = details.get("referrerId", None)
@@ -129,6 +136,13 @@ class Binance(exchanges.Exchange):
             raise
         except ValueError as err:
             raise ccxt.AuthenticationError(f"Invalid key format ({err})")
+        except ccxt.ExchangeError as err:
+            if "AgentCode is not exist" in str(err):
+                # err: BadRequest('binance {"code":-9000,"msg":"apiAgentCode is not exist"}')
+                raise trading_backend.errors.InvalidIdError(
+                    f"{self.__class__.__name__} Agent code error (configured local id) is invalid. Please update it ({err})"
+                )
+            raise err
         except AttributeError:
             if isinstance(details, aiohttp.streams.StreamReader):
                 return False, "Error when fetching exchange data (unreadable response)"

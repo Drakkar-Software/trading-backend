@@ -113,7 +113,8 @@ class Binance(exchanges.Exchange):
             if self._exchange.exchange_manager.is_future and not self._exchange.exchange_manager.is_sandboxed:
                 # no way to check on futures accounts (raising AgentCode is not exist)
                 return True, None
-            details = await self._get_account_referral_details()
+            with self.error_describer():
+                details = await self._get_account_referral_details()
             if not details.get("rebateWorking", False):
                 ref_id = details.get("referrerId", None)
                 if ref_id is not None:

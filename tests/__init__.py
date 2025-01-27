@@ -129,6 +129,9 @@ class ExchangeConnector:
         for header_key, header_value in headers_dict.items():
             self.client.headers[header_key] = header_value
 
+    def raise_or_prefix_proxy_error_if_relevant(self, cause_error, raised_error):
+        raise cause_error from (raised_error or cause_error)
+
 
 class ExchangeManager:
     def __init__(self, is_margin=False, is_future=False, is_sandboxed=False):

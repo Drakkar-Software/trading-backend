@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import ccxt
+import contextlib
 
 import trading_backend.errors
 import trading_backend.enums
@@ -73,7 +74,8 @@ class Exchange:
     async def _get_api_key_rights_using_order(self) -> list[trading_backend.enums.APIKeyRights]:
         rights = [trading_backend.enums.APIKeyRights.READING]
         try:
-            await self._inner_cancel_order()
+            with self.error_describer():
+                await self._inner_cancel_order()
         except ccxt.AuthenticationError as err:
             if "permission" in str(err).lower():
                 # does not have trading permission
@@ -92,7 +94,8 @@ class Exchange:
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
         # default implementation: fetch portfolio and don't check
         # todo implementation for each exchange as long as ccxt does not support it in unified api
-        await self._exchange.connector.client.fetch_balance()
+        with self.error_describer():
+            await self._exchange.connector.client.fetch_balance()
         return [
             trading_backend.enums.APIKeyRights.READING,
             trading_backend.enums.APIKeyRights.SPOT_TRADING,
@@ -173,3 +176,10 @@ class Exchange:
         if self._exchange.exchange_manager.is_margin:
             return self.MARGIN_ID
         return self.SPOT_ID
+
+    @contextlib.contextmanager
+    def error_describer(self):
+        try:
+            yield
+        except (ccxt.ExchangeNotAvailable, ccxt.AuthenticationError) as err:
+            self._exchange.connector.raise_or_prefix_proxy_error_if_relevant(err, None)

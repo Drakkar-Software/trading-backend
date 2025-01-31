@@ -200,4 +200,10 @@ class Exchange:
         try:
             yield
         except (ccxt.ExchangeNotAvailable, ccxt.AuthenticationError) as err:
-            self._exchange.connector.raise_or_prefix_proxy_error_if_relevant(err, None)
+            try:
+                self._exchange.connector.raise_or_prefix_proxy_error_if_relevant(err, None)
+            except ccxt.BaseError:
+                raise
+            except Exception as err:
+                # wrap error into local trading_backend.errors.UnexpectedError
+                raise trading_backend.errors.UnexpectedError(err) from err

@@ -23,7 +23,9 @@ from trading_backend import errors
 from trading_backend.errors import (
     TimeSyncError,
     ExchangeAuthError,
+    APIKeyIPWhitelistError,
     APIKeyPermissionsError,
+    UnexpectedError,
 )
 
 __all__ = [
@@ -31,4 +33,7 @@ __all__ = [
     "is_sponsoring",
     "TimeSyncError",
     "ExchangeAuthError",
+    "APIKeyIPWhitelistError",
+    "APIKeyPermissionsError",
+    "UnexpectedError",
 ]

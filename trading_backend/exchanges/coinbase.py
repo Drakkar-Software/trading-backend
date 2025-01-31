@@ -27,6 +27,7 @@ class Coinbase(exchanges.Exchange):
     FUTURE_ID = None
     REF_ID = None
     IS_SPONSORING = False
+    ORDER_ID = "8bb80a81-27f7-4415-aa50-911ea46d841c"
 
     @classmethod
     def get_name(cls):
@@ -87,6 +88,8 @@ class Coinbase(exchanges.Exchange):
     async def _inner_cancel_order(self):
         try:
             await super()._inner_cancel_order()
+            # also try to fetch balance on coinbase
+            await self._exchange.connector.client.fetch_balance(params={"v3":True})
         except ccxt.ArgumentsRequired as err:
             # raised on invalid api keys
             raise ccxt.AuthenticationError(err) from err
@@ -96,22 +99,6 @@ class Coinbase(exchanges.Exchange):
         # https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-users
         try:
             return await self._get_api_key_rights_using_order()
-            # DEPRECATED:
-            # GET https://api.coinbase.com/v2/user/auth 410 Gone The path /v2/user/auth is deprecated and no longer exists.
-            restrictions = (await self._exchange.connector.client.v2PrivateGetUserAuth())["data"]
-            scopes = restrictions["scopes"]
-            if rights := self._get_api_permissions(scopes):
-                return rights
-            # legacy api keys
-            if rights := self._get_legacy_api_permissions(scopes):
-                return rights
-            # should not happen unless coinbase changes its api again
-            self._exchange.logger.error(
-                f"Can't fetch {self.get_name()} api key permissions from scopes: {scopes}. "
-                f"Using default order creation check instead"
-            )
-            # last change: try creating an order
-            return await self._get_api_key_rights_using_order()
         except ccxt.AuthenticationError:
             raise
         except (
@@ -119,15 +106,6 @@ class Coinbase(exchanges.Exchange):
             ccxt.ArgumentsRequired, ccxt.static_dependencies.ecdsa.der.UnexpectedDER
         ) as err:
             raise ccxt.AuthenticationError(f"Invalid key format ({err})")
-        except ccxt.BaseError as err:
-            self._exchange.logger.exception(
-                err, True,
-                f"Error when fetching {self.get_name()} api key rights: {err} ({err.__class__.__name__}). "
-                f"This is not normal, endpoint might be deprecated, see"
-                f"https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-users. "
-                f"Using _get_api_key_rights_using_order() instead"
-            )
-            return await self._get_api_key_rights_using_order()
 
     async def _inner_is_valid_account(self) -> (bool, str):
         return False, await self._ensure_broker_status()

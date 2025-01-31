@@ -15,7 +15,11 @@
 #  License along with this library.
 
 
-class TimeSyncError(RuntimeError):
+class UnexpectedError(RuntimeError):
+    pass
+
+
+class TimeSyncError(UnexpectedError):
     pass
 
 
@@ -23,7 +27,11 @@ class ExchangeAuthError(RuntimeError):
     pass
 
 
-class APIKeyPermissionsError(RuntimeError):
+class APIKeyIPWhitelistError(ExchangeAuthError):
+    pass
+
+
+class APIKeyPermissionsError(ExchangeAuthError):
     pass
 
 

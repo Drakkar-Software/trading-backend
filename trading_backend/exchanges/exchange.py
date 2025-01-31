@@ -26,6 +26,7 @@ class Exchange:
     MARGIN_ID = None
     FUTURE_ID = None
     IS_SPONSORING = False
+    ORDER_ID = "12345"
 
     def __init__(self, exchange):
         self._exchange = exchange
@@ -67,9 +68,9 @@ class Exchange:
             return "BTC/USDT:USDT"
         return "BTC/USDT"
 
-    async def _inner_cancel_order(self):
-        # use client api to avoid any ccxt call wrapping and error handling
-        await self._exchange.connector.client.cancel_order("12345", symbol=self._get_symbol())
+    async def _inner_cancel_order(self):    
+        await self._exchange.connector.client.cancel_order(self.ORDER_ID, symbol=self._get_symbol())
+
 
     async def _get_api_key_rights_using_order(self) -> list[trading_backend.enums.APIKeyRights]:
         rights = [trading_backend.enums.APIKeyRights.READING]
@@ -77,19 +78,30 @@ class Exchange:
             with self.error_describer():
                 await self._inner_cancel_order()
         except ccxt.AuthenticationError as err:
-            if "permission" in str(err).lower():
-                # does not have trading permission
+            if self._exchange.is_api_permission_error(err):
+                # does not have trading permission: do not add trading permissions to rights
                 pass
             else:
-                # another error
+                self.raise_accurate_auth_error_if_any(err)
                 raise
+        except (ccxt.BadSymbol, ccxt.OperationFailed) as err:
+            # should not happen
+            raise trading_backend.errors.UnexpectedError(err) from err
         except ccxt.ExchangeError as err:
+            self.raise_accurate_auth_error_if_any(err)
             if not self._exchange.is_api_permission_error(err):
-                # has trading permission
+                # goal of the check: we are in the expected "order not found" error scenario
+                # => has trading permission
                 rights.append(trading_backend.enums.APIKeyRights.SPOT_TRADING)
                 rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
                 rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
         return rights
+
+    def raise_accurate_auth_error_if_any(self, err):
+        if self._exchange.is_ip_whitelist_error(err):
+            raise trading_backend.errors.APIKeyIPWhitelistError(err) from err
+        if self._exchange.is_authentication_error(err):
+            raise ccxt.AuthenticationError(err) from err
 
     async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
         # default implementation: fetch portfolio and don't check
@@ -117,6 +129,9 @@ class Exchange:
             except ImportError:
                 pass
             raise err
+        except (trading_backend.errors.ExchangeAuthError, trading_backend.errors.UnexpectedError):
+            # forward error
+            raise
         except Exception as err:
             try:
                 import octobot_commons.logging as logging
@@ -149,7 +164,7 @@ class Exchange:
             # 2. check api key right
             await self._ensure_api_key_rights()
             return validity, message
-        except trading_backend.errors.APIKeyPermissionsError:
+        except trading_backend.errors.ExchangeAuthError:
             # forward exception
             raise
         except ccxt.InvalidNonce as err:
@@ -179,6 +194,9 @@ class Exchange:
 
     @contextlib.contextmanager
     def error_describer(self):
+        """
+        Note: does not change the exception class unless it's a proxy connection issue
+        """
         try:
             yield
         except (ccxt.ExchangeNotAvailable, ccxt.AuthenticationError) as err:

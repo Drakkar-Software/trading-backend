@@ -145,3 +145,5 @@ class ExchangeWrapper:
         self.connector = ExchangeConnector(ccxt_exchange)
         self.exchange_manager = ExchangeManager(is_margin=is_margin, is_future=is_future)
         self.is_api_permission_error = mock.Mock(return_value=False)
+        self.is_authentication_error = mock.Mock(return_value=False)
+        self.is_ip_whitelist_error = mock.Mock(return_value=False)

@@ -20,6 +20,7 @@ import ccxt
 import trading_backend.exchanges as exchanges
 import trading_backend.errors
 import trading_backend.enums
+from trading_backend.exchanges.exchange import ProxyConnectionError
 from tests import default_exchange
 
 
@@ -47,6 +48,12 @@ async def test_is_valid_account(default_exchange):
                            mock.AsyncMock(side_effect=KeyError)) as fetch_balance_mock:
         # non ccxt error: proceed to right checks and raise
         with pytest.raises(trading_backend.errors.APIKeyPermissionsError):
+            assert await exchange.is_valid_account() == (True, None)
+        fetch_balance_mock.assert_called_once()
+    with mock.patch.object(exchange._exchange.connector.client, "fetch_balance",
+                           mock.AsyncMock(side_effect=ProxyConnectionError)) as fetch_balance_mock:
+        # non ccxt error: proceed to right checks and raise
+        with pytest.raises(trading_backend.errors.UnexpectedError):
             assert await exchange.is_valid_account() == (True, None)
         fetch_balance_mock.assert_called_once()
     with mock.patch.object(exchange._exchange.connector.client, "fetch_balance",

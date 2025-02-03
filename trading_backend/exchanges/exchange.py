@@ -15,6 +15,12 @@
 #  License along with this library.
 import ccxt
 import contextlib
+try:
+    from aiohttp_socks import ProxyConnectionError
+except ImportError:
+    # local mock in case aiohttp_socks is not available
+    class ProxyConnectionError(Exception):
+        pass
 
 import trading_backend.errors
 import trading_backend.enums
@@ -199,7 +205,7 @@ class Exchange:
         """
         try:
             yield
-        except (ccxt.ExchangeNotAvailable, ccxt.AuthenticationError) as err:
+        except (ccxt.ExchangeNotAvailable, ccxt.AuthenticationError, ProxyConnectionError) as err:
             try:
                 self._exchange.connector.raise_or_prefix_proxy_error_if_relevant(err, None)
             except ccxt.BaseError:

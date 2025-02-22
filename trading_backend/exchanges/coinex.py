@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import trading_backend.exchanges as exchanges
+import trading_backend.enums
 
 
 class Coinex(exchanges.Exchange):
@@ -29,3 +30,9 @@ class Coinex(exchanges.Exchange):
         if self._exchange.connector.client.options.get("brokerId", None) != self._get_id():
             self._exchange.connector.client.options["brokerId"] = self._get_id()
         return super().get_orders_parameters(params)
+
+    async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
+        # It is currently impossible to fetch api key permissions: try to cancel an imaginary order,
+        # if a permission error is raised instead of a cancel fail, then trading permissions are missing.
+        # updated: 22/02/2025
+        return await self._get_api_key_rights_using_order()

@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import trading_backend.exchanges as exchanges
+import trading_backend.enums
 
 
 class Bitmart(exchanges.Exchange):
@@ -24,6 +25,12 @@ class Bitmart(exchanges.Exchange):
     @classmethod
     def get_name(cls):
         return 'bitmart'
+
+    async def _get_api_key_rights(self) -> list[trading_backend.enums.APIKeyRights]:
+        # It is currently impossible to fetch api key permissions: try to cancel an imaginary order,
+        # if a permission error is raised instead of a cancel fail, then trading permissions are missing.
+        # updated: 13/03/2025
+        return await self._get_api_key_rights_using_order()
 
     def get_orders_parameters(self, params=None) -> dict:
         if self._exchange.connector.client.options.get("brokerId", None) != self._get_id():

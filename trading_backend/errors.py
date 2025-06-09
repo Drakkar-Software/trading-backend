@@ -23,6 +23,10 @@ class TimeSyncError(UnexpectedError):
     pass
 
 
+class NetworkError(UnexpectedError):
+    pass
+
+
 class ExchangeAuthError(RuntimeError):
     pass
 

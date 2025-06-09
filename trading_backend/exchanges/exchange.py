@@ -175,6 +175,8 @@ class Exchange:
             raise
         except ccxt.InvalidNonce as err:
             raise trading_backend.errors.TimeSyncError(err)
+        except ccxt.NetworkError as err:
+            raise trading_backend.errors.NetworkError(err)
         except ccxt.ExchangeError as err:
             raise trading_backend.errors.ExchangeAuthError(err)
         except trading_backend.errors.InvalidIdError as err:

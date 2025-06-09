@@ -26,6 +26,7 @@ from trading_backend.errors import (
     APIKeyIPWhitelistError,
     APIKeyPermissionsError,
     UnexpectedError,
+    NetworkError,
 )
 
 __all__ = [
@@ -36,4 +37,5 @@ __all__ = [
     "APIKeyIPWhitelistError",
     "APIKeyPermissionsError",
     "UnexpectedError",
+    "NetworkError",
 ]

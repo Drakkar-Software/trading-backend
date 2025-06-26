@@ -15,6 +15,7 @@
 #  License along with this library.
 import ccxt
 import contextlib
+import aiohttp
 try:
     from aiohttp_socks import ProxyConnectionError
 except ImportError:
@@ -207,7 +208,12 @@ class Exchange:
         """
         try:
             yield
-        except (ccxt.ExchangeNotAvailable, ccxt.AuthenticationError, ProxyConnectionError) as err:
+        except (
+            # Generic connection / exchange error
+            ccxt.ExchangeNotAvailable, ccxt.AuthenticationError, ccxt.ExchangeError,
+            # Proxy errors
+            aiohttp.ClientHttpProxyError, aiohttp.ClientProxyConnectionError, ProxyConnectionError
+        ) as err:
             try:
                 self._exchange.connector.raise_or_prefix_proxy_error_if_relevant(err, None)
             except ccxt.BaseError:

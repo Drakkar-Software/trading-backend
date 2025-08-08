@@ -14,7 +14,9 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import mock
+import os
 import pytest
+import pytest_asyncio
 import ccxt.async_support
 
 
@@ -147,3 +149,16 @@ class ExchangeWrapper:
         self.is_api_permission_error = mock.Mock(return_value=False)
         self.is_authentication_error = mock.Mock(return_value=False)
         self.is_ip_whitelist_error = mock.Mock(return_value=False)
+
+
+def _is_on_github_ci():
+    # Always set to true when GitHub Actions is running the workflow.
+    # You can use this variable to differentiate when tests are being run locally or by GitHub Actions.
+    # from https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables
+    return bool(os.getenv("GITHUB_ACTIONS"))
+
+
+@pytest_asyncio.fixture
+async def skipped_on_github_CI():
+    if _is_on_github_ci():
+        pytest.skip(reason="test skipped on github CI")

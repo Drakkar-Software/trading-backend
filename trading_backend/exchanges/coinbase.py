@@ -22,19 +22,21 @@ import trading_backend.enums
 
 class Coinbase(exchanges.Exchange):
     # todo update this when coinbase broker id is available
-    SPOT_ID = None
-    MARGIN_ID = None
-    FUTURE_ID = None
+    SPOT_ID = "octobot"
+    MARGIN_ID = "octobot"
+    FUTURE_ID = "octobot"
     REF_ID = None
-    IS_SPONSORING = False
+    IS_SPONSORING = True
     ORDER_ID = "8bb80a81-27f7-4415-aa50-911ea46d841c"
 
     @classmethod
     def get_name(cls):
         return 'coinbase'
 
-    async def _ensure_broker_status(self):
-        return f"Broker rebate is not enabled (missing broker id)."
+    def get_orders_parameters(self, params=None) -> dict:
+        if self._exchange.connector.client.options.get("brokerId", None) != self._get_id():
+            self._exchange.connector.client.options["brokerId"] = self._get_id()
+        return super().get_orders_parameters(params)
 
     def _get_legacy_api_permissions(self, scopes):
         rights = []

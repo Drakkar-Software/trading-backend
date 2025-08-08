@@ -18,7 +18,7 @@ import pytest
 import ccxt.async_support
 import trading_backend.exchanges as exchanges
 import tests.util.create_order_tests as create_order_tests
-from tests import huobi_exchange
+from tests import huobi_exchange, skipped_on_github_CI
 
 
 def test_get_name(huobi_exchange):
@@ -26,7 +26,8 @@ def test_get_name(huobi_exchange):
 
 
 @pytest.mark.asyncio
-async def test_get_orders_parameters(huobi_exchange):
+async def test_get_orders_parameters(huobi_exchange, skipped_on_github_CI):
+    # for some reason the htx API can't be reached on github CI
     exchange = exchanges.Huobi(huobi_exchange)
     with mock.patch.object(exchange._exchange.connector.client,
                            "fetch_accounts", mock.AsyncMock(return_value=[{'id': 1}])):

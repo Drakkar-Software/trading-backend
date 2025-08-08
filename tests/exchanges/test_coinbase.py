@@ -14,11 +14,9 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library.
 import pytest
-import mock
 import ccxt.async_support
 import trading_backend.exchanges as exchanges
-import trading_backend.enums
-import trading_backend
+import tests.util.create_order_tests as create_order_tests
 from tests import coinbase_exchange
 
 
@@ -29,7 +27,12 @@ def test_get_name(coinbase_exchange):
 @pytest.mark.asyncio
 async def test_get_orders_parameters(coinbase_exchange):
     exchange = exchanges.Coinbase(coinbase_exchange)
-    assert exchange.get_orders_parameters({}) == {}
+    await create_order_tests.create_order_mocked_test_args(
+        exchange,
+        exchange_private_post_order_method_name="v3PrivatePostBrokerageOrders",
+        exchange_request_referral_key="client_order_id",
+        should_contains=True
+    )
 
 
 @pytest.mark.asyncio

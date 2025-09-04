@@ -103,7 +103,11 @@ class Binance(exchanges.Exchange):
             rights.append(trading_backend.enums.APIKeyRights.MARGIN_TRADING)
         if restrictions.get('enableFutures'):
             rights.append(trading_backend.enums.APIKeyRights.FUTURES_TRADING)
-        if restrictions.get('enableWithdrawals'):
+        if (
+            restrictions.get('enableInternalTransfer') 
+            or restrictions.get('permitsUniversalTransfer')
+            or restrictions.get('enableWithdrawals')
+        ):
             rights.append(trading_backend.enums.APIKeyRights.WITHDRAWALS)
         return rights
 

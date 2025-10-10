@@ -18,7 +18,7 @@ pur
 
 pylint
 
-ccxt==4.5.0   # use to run test using a specific version of ccxt
+ccxt==4.5.8   # use to run test using a specific version of ccxt
 
 # async http requests
 aiohttp==3.11.18

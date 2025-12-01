@@ -91,7 +91,9 @@ class Exchange:
             else:
                 self.raise_accurate_auth_error_if_any(err)
                 raise
-        except (ccxt.BadSymbol, ccxt.OperationFailed) as err:
+        except ccxt.InvalidNonce as err:
+            raise trading_backend.errors.TimeSyncError(err) from err
+        except (ccxt.BadSymbol, ccxt.OperationFailed) as err:  
             # should not happen
             raise trading_backend.errors.UnexpectedError(err) from err
         except ccxt.ExchangeError as err:
